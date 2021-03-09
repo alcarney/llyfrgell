@@ -1,7 +1,7 @@
 llyfrgell_sources = [
   'main.c',
   'llyfr-application.c',
-  'llyfr-search-rg.c',
+  'llyfr-search-context.c',
   'llyfr-window.c',
 ]
 

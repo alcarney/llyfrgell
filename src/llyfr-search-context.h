@@ -21,8 +21,10 @@
 #ifndef LLYFR_SEARCH_CONTEXT_H
 #define LLYFR_SEARCH_CONTEXT_H
 
+#include <gio/gio.h>
 #include <glib.h>
 #include <glib-object.h>
+
 
 G_BEGIN_DECLS
 
@@ -35,7 +37,15 @@ struct _LlyfrSearchContextClass
   GObjectClass parent;
 };
 
-LlyfrSearchContext *llyfr_search_context_new (void);
+LlyfrSearchContext* llyfr_search_context_new           (char* directory);
+
+const gchar*        llyfr_search_context_get_directory (LlyfrSearchContext *context);
+
+void                llyfr_search_context_set_directory (LlyfrSearchContext *context,
+                                                        const gchar *directory);
+
+void                llyfr_search_context_search        (LlyfrSearchContext *context,
+                                                        const gchar* query);
 
 G_END_DECLS
 

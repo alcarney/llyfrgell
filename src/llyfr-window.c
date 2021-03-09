@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "llyfr-search-rg.h"
+#include "llyfr-search-context.h"
 #include "llyfr-window.h"
 
 struct _LlyfrWindow
@@ -39,7 +39,8 @@ search_activated_cb (GtkSearchEntry *self)
   gtk_entry_progress_pulse (GTK_ENTRY (self));
   const gchar* query = gtk_editable_get_text (GTK_EDITABLE (self));
 
-  llyfr_search_rg (query);
+  LlyfrSearchContext *context = llyfr_search_context_new ("/home/alex/Code/gnome-builder");
+  llyfr_search_context_search (context, query);
 }
 
 static void
