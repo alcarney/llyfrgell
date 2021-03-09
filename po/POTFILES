@@ -1,0 +1,7 @@
+data/io.github.swyddfa.Llyfrgell.desktop.in
+data/io.github.swyddfa.Llyfrgell.appdata.xml.in
+data/io.github.swyddfa.Llyfrgell.gschema.xml
+src/llyfrgell-window.ui
+src/main.c
+src/llyfrgell-window.c
+

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist gettext-domain="llyfrgell">
+	<schema id="io.github.swyddfa.Llyfrgell" path="/io/github/swyddfa/Llyfrgell/">
+	</schema>
+</schemalist>

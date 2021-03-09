@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gresources>
+  <gresource prefix="/io/github/swyddfa/Llyfrgell">
+    <file>ui/llyfrgell.css</file>
+    <file>ui/menus.ui</file>
+    <file>ui/window.ui</file>
+  </gresource>
+</gresources>
