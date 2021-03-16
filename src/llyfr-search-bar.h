@@ -1,6 +1,6 @@
-/* llyfrgell-window.h
+/* llyfr-search-bar.h
  *
- * Copyright 2021 Alex Carney
+ * Copyright 2021 Alex Carney <alcarneyme@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,21 +14,28 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-#ifndef LLYFR_WINDOW_H
-#define LLYFR_WINDOW_H
+#ifndef LLYFR_SEARCH_BAR_H
+#define LLYFR_SEARCH_BAR_H
 
+#include <glib-object.h>
 #include <gtk/gtk.h>
+
+#include "llyfr-search-context.h"
 
 G_BEGIN_DECLS
 
-#define LLYFR_TYPE_WINDOW (llyfr_window_get_type())
+#define LLYFR_TYPE_SEARCH_BAR (llyfr_search_bar_get_type())
 
-G_DECLARE_FINAL_TYPE (LlyfrWindow, llyfr_window, LLYFR, WINDOW, GtkApplicationWindow)
+G_DECLARE_FINAL_TYPE (LlyfrSearchBar, llyfr_search_bar, LLYFR, SEARCH_BAR, GtkBox)
 
-LlyfrWindow* llyfr_window_new (GtkApplication* app);
+LlyfrSearchBar*        llyfr_search_bar_new         (void);
+
+LlyfrSearchContext*    llyfr_search_bar_get_context (LlyfrSearchBar* bar);
 
 G_END_DECLS
 
-#endif /* LLYFR_WINDOW_H */
+#endif /* LLYFR_SEARCH_BAR_H */

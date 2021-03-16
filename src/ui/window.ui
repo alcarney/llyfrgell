@@ -10,47 +10,10 @@
     <child type="titlebar">
       <object class="GtkHeaderBar" id="header_bar">
         <child type="title">
-          <object class="GtkBox">
+          <object class="LlyfrSearchBar" id="search_bar">
             <property name="hexpand">True</property>
             <property name="margin-start">18</property>
             <property name="margin-end">18</property>
-            <child>
-              <object class="GtkButton" id="search_context">
-                <property name="action_name">win.switch-context</property>
-                <style>
-                  <class name="llyfrgell-search-context" />
-                </style>
-                <child>
-                  <object class="GtkBox">
-                    <property name="spacing">6</property>
-                    <child>
-                      <object class="GtkImage">
-                        <property name="icon-name">folder-symbolic</property>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkLabel">
-                        <property name="label">Projects/</property>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkImage">
-                        <property name="icon-name">pan-down-symbolic</property>
-                      </object>
-                    </child>
-                  </object>
-                </child>
-              </object>
-            </child>
-            <child>
-              <object class="GtkSearchEntry" id="search_entry">
-                <property name="hexpand">True</property>
-                <signal name="activate" handler="search_activated_cb" swapped="no"/>
-                <style>
-                  <class name="llyfrgell-search-entry" />
-                </style>
-              </object>
-            </child>
           </object>
         </child>
         <child type="end">

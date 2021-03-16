@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <requires lib="gtk" version="4.0"/>
+  <template class="LlyfrSearchBar" parent="GtkBox">
+    <property name="visible">True</property>
+    <style>
+      <class name="linked"/>
+    </style>
+    <child>
+      <object class="GtkButton" id="context_switcher">
+        <signal name="clicked" handler="context_clicked_cb" swapped="yes" object="LlyfrSearchBar" />
+        <child>
+          <object class="GtkBox">
+            <property name="spacing">6</property>
+            <child>
+              <object class="GtkImage">
+                <property name="icon-name">folder-symbolic</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="label">Test</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkImage">
+                <property name="icon-name">pan-down-symbolic</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkPopover" id="popover">
+                <child>
+                  <object class="GtkLabel">
+                    <property name="label">Test</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="GtkSearchEntry" id="search_entry">
+        <property name="hexpand">True</property >
+      </object>
+    </child>
+  </template>
+</interface>

@@ -152,7 +152,7 @@ void llyfr_search_context_class_init (LlyfrSearchContextClass *klass)
 
 }
 
-void llyfr_search_context_init (LlyfrSearchContext* self)
+void llyfr_search_context_init (LlyfrSearchContext *self)
 {
   LlyfrSearchContextPrivate *priv = llyfr_search_context_get_instance_private (self);
 
