@@ -38,10 +38,16 @@ context_clicked_cb (LlyfrSearchBar *self, GtkButton *button)
   gtk_popover_popup (self->popover);
 }
 
-LlyfrSearchContext*
-llyfr_search_bar_get_context (LlyfrSearchBar* picker)
+static void
+search_cb (LlyfrSearchBar *self, GtkSearchEntry *search_entry)
 {
-  return llyfr_search_context_new ("/home/alex/Code/gnome-builder");
+  const char* query;
+  LlyfrSearchContext *context;
+
+  context = llyfr_search_context_new ("/home/alex/Code/gnome-builder");
+  query = gtk_editable_get_text (GTK_EDITABLE (search_entry));
+
+  g_message ("%s", query);
 }
 
 static void
@@ -55,6 +61,7 @@ llyfr_search_bar_class_init (LlyfrSearchBarClass *klass)
   gtk_widget_class_bind_template_child (widget_class, LlyfrSearchBar, popover);
 
   gtk_widget_class_bind_template_callback (widget_class, context_clicked_cb);
+  gtk_widget_class_bind_template_callback (widget_class, search_cb);
 }
 
 static void

@@ -34,16 +34,6 @@ struct _LlyfrWindow
 G_DEFINE_TYPE (LlyfrWindow, llyfr_window, GTK_TYPE_APPLICATION_WINDOW)
 
 static void
-search_activated_cb (GtkSearchEntry *self)
-{
-  /*gtk_entry_progress_pulse (GTK_ENTRY (self));
-  const gchar* query = gtk_editable_get_text (GTK_EDITABLE (self));
-
-  LlyfrSearchContext *context = llyfr_search_bar_get_context (self->search_bar);
-  llyfr_search_context_search (context, query);*/
-}
-
-static void
 llyfr_window_class_init (LlyfrWindowClass *klass)
 {
   GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);

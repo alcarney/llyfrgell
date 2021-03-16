@@ -34,8 +34,6 @@ G_DECLARE_FINAL_TYPE (LlyfrSearchBar, llyfr_search_bar, LLYFR, SEARCH_BAR, GtkBo
 
 LlyfrSearchBar*        llyfr_search_bar_new         (void);
 
-LlyfrSearchContext*    llyfr_search_bar_get_context (LlyfrSearchBar* bar);
-
 G_END_DECLS
 
 #endif /* LLYFR_SEARCH_BAR_H */

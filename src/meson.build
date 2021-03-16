@@ -1,24 +1,30 @@
-llyfrgell_sources = [
+sources = [
+  'models/llyfr-search-context.c',
   'main.c',
   'llyfr-application.c',
   'llyfr-search-bar.c',
-  'llyfr-search-context.c',
   'llyfr-window.c',
 ]
 
-llyfrgell_deps = [
+deps = [
   dependency('gio-2.0', version: '>= 2.50'),
   dependency('gtk4', version: '>= 4.0'),
 ]
 
+includes = include_directories(
+  'models'
+)
+
 gnome = import('gnome')
 
-llyfrgell_sources += gnome.compile_resources('llyfrgell-resources',
+sources += gnome.compile_resources('llyfrgell-resources',
   'llyfrgell.gresource.xml',
   c_name: 'llyfrgell'
 )
 
-executable('llyfrgell', llyfrgell_sources,
-  dependencies: llyfrgell_deps,
+executable('llyfrgell',
+  sources,
+  include_directories: includes,
+  dependencies: deps,
   install: true,
 )
