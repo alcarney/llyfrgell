@@ -18,7 +18,10 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+#define G_LOG_DOMAIN "llyfr-search-context"
+
 #include "llyfr-search-context.h"
+#include "llyfr-search-result.h"
 
 typedef struct
 {
@@ -41,54 +44,120 @@ LlyfrSearchContext* llyfr_search_context_new (char* directory)
                        NULL);
 }
 
-void llyfr_search_context_search (LlyfrSearchContext *context,
-                                  const gchar* query)
+static GSubprocess*
+llyfr_search_context_do_rg_search (LlyfrSearchContext *context,
+                                   const gchar *query,
+                                   GError **error)
 {
   GSubprocess *process;
-  GError *error = NULL;
-
-  char* line = NULL;
-  gsize length = 0;
-  GInputStream *stdout_pipe;
-  GDataInputStream *data_stream;
-
-  const gchar* search_directory = llyfr_search_context_get_directory (context);
+  const gchar *search_directory = llyfr_search_context_get_directory (context);
 
   g_assert (search_directory != NULL);
-  process = g_subprocess_new (G_SUBPROCESS_FLAGS_STDOUT_PIPE, &error,
+  process = g_subprocess_new (G_SUBPROCESS_FLAGS_STDOUT_PIPE, error,
                               "flatpak-spawn", "--host",
                               "rg", "--json",
                               query, search_directory,
                               NULL);
 
-  if (process == NULL)
+  if (process == NULL || !g_subprocess_wait_check (process, NULL, error))
+    return NULL;
+
+  return process;
+}
+
+static JsonNode *
+llyfr_search_context_parse_object (char*    line,
+                                   gsize    length,
+                                   GError **error)
+{
+  g_autoptr (JsonParser) parser = json_parser_new ();
+  JsonNode *root = NULL;
+
+  if (!json_parser_load_from_data (parser, line, length, error))
+    return NULL;
+
+  root = json_parser_get_root (parser);
+  if (root == NULL || !JSON_NODE_HOLDS_OBJECT (root))
     {
-      g_message ("Unable to create subprocess");
-      if (error != NULL)
-        {
-          g_message ("%s", error->message);
-        }
-      return;
+      g_set_error (error,
+                   JSON_PARSER_ERROR,
+                   JSON_PARSER_ERROR_INVALID_DATA,
+                   "Expected JSON Object Got: '%s'", line);
+      return NULL;
     }
+
+  return json_parser_steal_root (parser);
+}
+
+GListModel* llyfr_search_context_search (LlyfrSearchContext *context,
+                                         const gchar* query,
+                                         GError **error)
+{
+  g_autoptr(GSubprocess) process = NULL;
+  g_autoptr(GDataInputStream) data_stream = NULL;
+
+  char* line = NULL;
+  gsize length = 0;
+  GInputStream *stdout_pipe;
+
+  LlyfrSearchResult* current_result = NULL;
+  GListStore* results;
+
+  process = llyfr_search_context_do_rg_search (context, query, error);
+  if (process == NULL)
+    return NULL;
 
   stdout_pipe = g_subprocess_get_stdout_pipe (process);
   data_stream = g_data_input_stream_new (stdout_pipe);
 
-  while ((line = g_data_input_stream_read_line (data_stream, &length, NULL, &error)) != NULL)
+  results = g_list_store_new (LLYFR_TYPE_SEARCH_RESULT);
+
+  while ((line = g_data_input_stream_read_line (data_stream, &length, NULL, error)) != NULL)
     {
-      g_message ("Read %ld: %s", length, line);
+      g_autoptr (JsonReader) reader = NULL;
+      g_autoptr(JsonNode) node = NULL;
+
+      node = llyfr_search_context_parse_object (line, length, error);
+      if (node == NULL)
+        {
+          g_message ("Unable to parse line '%s'\n%s", line, (*error)->message);
+          continue;
+        }
+
+      reader = json_reader_new (node);
+
+      json_reader_read_member (reader, "type");
+      const char* type = json_reader_get_string_value (reader);
+
+      if (g_strcmp0 (type, "begin") == 0)
+        {
+          current_result = llyfr_search_result_new_from_json (node);
+          continue;
+        }
+
+      if (g_strcmp0 (type, "end") == 0)
+        {
+          g_list_store_append (results, current_result);
+          continue;
+        }
+
+      g_message ("Unhandled type: %s", type);
     }
+
+  return G_LIST_MODEL(results);
 }
 
-const gchar* llyfr_search_context_get_directory (LlyfrSearchContext *context)
+const gchar*
+llyfr_search_context_get_directory (LlyfrSearchContext *context)
 {
   LlyfrSearchContextPrivate *priv = llyfr_search_context_get_instance_private (context);
 
   return priv->directory ? priv->directory : "";
 }
 
-void llyfr_search_context_set_directory (LlyfrSearchContext *context,
-                                         const gchar *directory)
+void
+llyfr_search_context_set_directory (LlyfrSearchContext *context,
+                                    const gchar *directory)
 {
   LlyfrSearchContextPrivate *priv = llyfr_search_context_get_instance_private (context);
 
@@ -134,7 +203,8 @@ llyfr_search_context_set_property (GObject      *object,
     }
 }
 
-void llyfr_search_context_class_init (LlyfrSearchContextClass *klass)
+void
+llyfr_search_context_class_init (LlyfrSearchContextClass *klass)
 {
 
   GObjectClass *object_class = G_OBJECT_CLASS (klass);
@@ -152,7 +222,8 @@ void llyfr_search_context_class_init (LlyfrSearchContextClass *klass)
 
 }
 
-void llyfr_search_context_init (LlyfrSearchContext *self)
+void
+llyfr_search_context_init (LlyfrSearchContext *self)
 {
   LlyfrSearchContextPrivate *priv = llyfr_search_context_get_instance_private (self);
 

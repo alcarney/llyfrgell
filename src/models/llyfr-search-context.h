@@ -24,7 +24,7 @@
 #include <gio/gio.h>
 #include <glib.h>
 #include <glib-object.h>
-
+#include <json-glib/json-glib.h>
 
 G_BEGIN_DECLS
 
@@ -44,8 +44,9 @@ const gchar*        llyfr_search_context_get_directory (LlyfrSearchContext *cont
 void                llyfr_search_context_set_directory (LlyfrSearchContext *context,
                                                         const gchar *directory);
 
-void                llyfr_search_context_search        (LlyfrSearchContext *context,
-                                                        const gchar* query);
+GListModel*         llyfr_search_context_search        (LlyfrSearchContext *context,
+                                                        const gchar* query,
+                                                        GError **error);
 
 G_END_DECLS
 

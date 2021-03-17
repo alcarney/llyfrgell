@@ -47,7 +47,13 @@ search_cb (LlyfrSearchBar *self, GtkSearchEntry *search_entry)
   context = llyfr_search_context_new ("/home/alex/Code/gnome-builder");
   query = gtk_editable_get_text (GTK_EDITABLE (search_entry));
 
-  g_message ("%s", query);
+  GError* error = NULL;
+  GListModel *model = llyfr_search_context_search (context, query, &error);
+  if (model == NULL)
+    {
+      g_message ("Error while searching: %s", error->message);
+    }
+
 }
 
 static void
