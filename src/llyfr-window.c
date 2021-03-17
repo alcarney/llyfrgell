@@ -16,6 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#define G_LOG_DOMAIN "llyfr-window"
+
 #include "llyfr-search-bar.h"
 #include "llyfr-search-context.h"
 #include "llyfr-window.h"
@@ -32,6 +34,12 @@ struct _LlyfrWindow
 };
 
 G_DEFINE_TYPE (LlyfrWindow, llyfr_window, GTK_TYPE_APPLICATION_WINDOW)
+
+static void
+results_available_cb (LlyfrSearchBar* search_bar, GListModel* results, LlyfrWindow* self)
+{
+  g_message ("Found %d results!", g_list_model_get_n_items (results));
+}
 
 static void
 llyfr_window_class_init (LlyfrWindowClass *klass)
@@ -60,6 +68,11 @@ llyfr_window_init (LlyfrWindow *self)
   builder = gtk_builder_new_from_resource ("/io/github/swyddfa/Llyfrgell/ui/menus.ui");
   app_menu = G_MENU_MODEL (gtk_builder_get_object (builder, "app_menu"));
   gtk_menu_button_set_menu_model (self->menu_button, app_menu);
+
+  g_signal_connect (self->search_bar,
+                    "results-available",
+                    G_CALLBACK (results_available_cb),
+                    self);
 
   g_object_unref (builder);
 }

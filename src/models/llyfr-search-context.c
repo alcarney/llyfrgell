@@ -44,9 +44,10 @@ LlyfrSearchContext* llyfr_search_context_new (char* directory)
                        NULL);
 }
 
-static GSubprocess*
+static gboolean
 llyfr_search_context_do_rg_search (LlyfrSearchContext *context,
                                    const gchar *query,
+                                   char **output,
                                    GError **error)
 {
   GSubprocess *process;
@@ -59,10 +60,10 @@ llyfr_search_context_do_rg_search (LlyfrSearchContext *context,
                               query, search_directory,
                               NULL);
 
-  if (process == NULL || !g_subprocess_wait_check (process, NULL, error))
-    return NULL;
+  if (process == NULL)
+    return FALSE;
 
-  return process;
+  return g_subprocess_communicate_utf8 (process, NULL, NULL, output, NULL, error);
 }
 
 static JsonNode *
@@ -93,34 +94,33 @@ GListModel* llyfr_search_context_search (LlyfrSearchContext *context,
                                          const gchar* query,
                                          GError **error)
 {
-  g_autoptr(GSubprocess) process = NULL;
-  g_autoptr(GDataInputStream) data_stream = NULL;
-
-  char* line = NULL;
-  gsize length = 0;
-  GInputStream *stdout_pipe;
+  g_autoptr(GInputStream) instream = NULL;
+  g_autoptr(GDataInputStream) stream = NULL;
 
   LlyfrSearchResult* current_result = NULL;
+  char* line = NULL;
+  char* output = NULL;
+  gsize length = 0;
   GListStore* results;
 
-  process = llyfr_search_context_do_rg_search (context, query, error);
-  if (process == NULL)
+  if (!llyfr_search_context_do_rg_search (context, query, &output, error))
     return NULL;
 
-  stdout_pipe = g_subprocess_get_stdout_pipe (process);
-  data_stream = g_data_input_stream_new (stdout_pipe);
-
   results = g_list_store_new (LLYFR_TYPE_SEARCH_RESULT);
+  instream = g_memory_input_stream_new_from_data (output, -1, g_free);
+  stream = g_data_input_stream_new (instream);
 
-  while ((line = g_data_input_stream_read_line (data_stream, &length, NULL, error)) != NULL)
+  while ((line = g_data_input_stream_read_line (stream, &length, NULL, error)) != NULL)
     {
       g_autoptr (JsonReader) reader = NULL;
       g_autoptr(JsonNode) node = NULL;
 
+      g_debug ("%s", line);
       node = llyfr_search_context_parse_object (line, length, error);
       if (node == NULL)
         {
           g_message ("Unable to parse line '%s'\n%s", line, (*error)->message);
+          g_clear_error (error);
           continue;
         }
 
@@ -141,7 +141,7 @@ GListModel* llyfr_search_context_search (LlyfrSearchContext *context,
           continue;
         }
 
-      g_message ("Unhandled type: %s", type);
+      g_debug ("Unhandled type: %s", type);
     }
 
   return G_LIST_MODEL(results);
