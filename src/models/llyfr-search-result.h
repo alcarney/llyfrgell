@@ -18,7 +18,8 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-#pragma once
+#ifndef LLYFR_SEARCH_RESULT_H
+#define LLYFR_SEARCH_RESULT_H
 
 #include <glib.h>
 #include <glib-object.h>
@@ -32,11 +33,20 @@ G_DECLARE_FINAL_TYPE (LlyfrSearchResult, llyfr_search_result, LLYFR, SEARCH_RESU
 
 LlyfrSearchResult *llyfr_search_result_new           (const char *filepath);
 
-LlyfrSearchResult *llyfr_search_result_new_from_json (JsonNode* node);
+LlyfrSearchResult *llyfr_search_result_new_from_json (JsonNode *node);
+
+void               llyfr_search_result_add_match     (LlyfrSearchResult *result,
+                                                      JsonNode *node);
+
+void               llyfr_search_result_end           (LlyfrSearchResult *result);
 
 const gchar       *llyfr_search_result_get_filepath  (LlyfrSearchResult *result);
 
 void               llyfr_search_result_set_filepath  (LlyfrSearchResult *result,
                                                       const gchar* filepath);
 
+GList             *llyfr_search_result_get_lines     (LlyfrSearchResult *result);
+
 G_END_DECLS
+
+#endif /* LLYFR_SEARCH_RESULT_H */

@@ -135,8 +135,14 @@ GListModel* llyfr_search_context_search (LlyfrSearchContext *context,
           continue;
         }
 
+      if (g_strcmp0 (type, "match") == 0)
+        {
+          llyfr_search_result_add_match (current_result, node);
+        }
+
       if (g_strcmp0 (type, "end") == 0)
         {
+          llyfr_search_result_end (current_result);
           g_list_store_append (results, current_result);
           continue;
         }

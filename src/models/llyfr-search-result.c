@@ -18,6 +18,8 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+#define G_LOG_DOMAIN "llyfr-search-result"
+
 #include "llyfr-search-result.h"
 
 struct _LlyfrSearchResult
@@ -25,6 +27,8 @@ struct _LlyfrSearchResult
   GObject  parent_instance;
 
   gchar *filepath;
+  GList *lines;
+
 };
 
 G_DEFINE_TYPE (LlyfrSearchResult, llyfr_search_result, G_TYPE_OBJECT)
@@ -50,7 +54,7 @@ llyfr_search_result_new_from_json (JsonNode* node)
   g_autoptr (JsonReader) reader = json_reader_new (node);
 
   json_reader_read_member (reader, "type");
-  const char* type = json_reader_get_string_value (reader);
+  const char *type = json_reader_get_string_value (reader);
   g_assert (g_strcmp0 (type, "begin") == 0);
 
   json_reader_end_member (reader);
@@ -60,6 +64,32 @@ llyfr_search_result_new_from_json (JsonNode* node)
 
   const char *filepath = json_reader_get_string_value (reader);
   return llyfr_search_result_new (filepath);
+}
+
+void
+llyfr_search_result_add_match (LlyfrSearchResult *result,
+                               JsonNode *node)
+{
+  g_autoptr (JsonReader) reader = json_reader_new (node);
+
+  json_reader_read_member (reader, "type");
+  const char *type = json_reader_get_string_value (reader);
+  g_assert (g_strcmp0 (type, "match") == 0);
+
+  json_reader_end_member (reader);
+  g_assert (json_reader_read_member (reader, "data"));
+  g_assert (json_reader_read_member (reader, "lines"));
+  g_assert (json_reader_read_member (reader, "text"));
+
+  const char *line = json_reader_get_string_value (reader);
+  g_message ("%s", line);
+  result->lines = g_list_prepend (result->lines, g_strdup (line));
+}
+
+void
+llyfr_search_result_end (LlyfrSearchResult *result)
+{
+  result->lines = g_list_reverse (result->lines);
 }
 
 const gchar*
@@ -74,6 +104,12 @@ llyfr_search_result_set_filepath (LlyfrSearchResult *result,
 {
   g_clear_pointer (&result->filepath, g_free);
   result->filepath = g_strdup(filepath);
+}
+
+GList*
+llyfr_search_result_get_lines (LlyfrSearchResult *result)
+{
+  return result->lines;
 }
 
 static void
@@ -135,5 +171,6 @@ void
 llyfr_search_result_init (LlyfrSearchResult *self)
 {
   self->filepath = NULL;
+  self->lines = NULL;
 }
 

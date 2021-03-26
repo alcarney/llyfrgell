@@ -20,6 +20,8 @@
 
 #include "llyfr-search-bar.h"
 #include "llyfr-search-context.h"
+#include "llyfr-search-result.h"
+#include "llyfr-search-result-view.h"
 #include "llyfr-window.h"
 
 struct _LlyfrWindow
@@ -27,8 +29,8 @@ struct _LlyfrWindow
   GtkApplicationWindow      parent;
 
   /* Template widgets */
-  GtkHeaderBar              *header_bar;
   LlyfrSearchBar            *search_bar;
+  GtkListBox                *results_list;
   GtkMenuButton             *menu_button;
   GtkButton                 *add_button;
 };
@@ -38,7 +40,21 @@ G_DEFINE_TYPE (LlyfrWindow, llyfr_window, GTK_TYPE_APPLICATION_WINDOW)
 static void
 results_available_cb (LlyfrSearchBar* search_bar, GListModel* results, LlyfrWindow* self)
 {
-  g_message ("Found %d results!", g_list_model_get_n_items (results));
+  LlyfrSearchResult *current_result;
+  LlyfrSearchResultView *result_view;
+  guint num_results;
+
+  num_results = g_list_model_get_n_items (results);
+  g_message ("Found %d results!", num_results);
+
+  for (guint i = 0; i < num_results; i++) {
+    current_result = LLYFR_SEARCH_RESULT (g_list_model_get_item (results, i));
+
+    result_view = llyfr_search_result_view_new ();
+    llyfr_search_result_view_set_result (result_view, current_result);
+
+    gtk_list_box_append (self->results_list, GTK_WIDGET (result_view));
+  }
 }
 
 static void
@@ -50,8 +66,8 @@ llyfr_window_class_init (LlyfrWindowClass *klass)
   g_type_ensure(LLYFR_TYPE_SEARCH_BAR);
 
   gtk_widget_class_set_template_from_resource (widget_class, "/io/github/swyddfa/Llyfrgell/ui/window.ui");
-  gtk_widget_class_bind_template_child (widget_class, LlyfrWindow, header_bar);
   gtk_widget_class_bind_template_child (widget_class, LlyfrWindow, search_bar);
+  gtk_widget_class_bind_template_child (widget_class, LlyfrWindow, results_list);
   gtk_widget_class_bind_template_child (widget_class, LlyfrWindow, menu_button);
   gtk_widget_class_bind_template_child (widget_class, LlyfrWindow, add_button);
 

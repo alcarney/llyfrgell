@@ -4,6 +4,7 @@ sources = [
   'main.c',
   'llyfr-application.c',
   'llyfr-search-bar.c',
+  'llyfr-search-result-view.c',
   'llyfr-window.c',
 ]
 

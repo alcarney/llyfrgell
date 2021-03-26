@@ -5,7 +5,14 @@
     <property name="default-width">1280</property>
     <property name="default-height">720</property>
     <child>
-      <placeholder/>
+      <object class="GtkScrolledWindow">
+        <child>
+          <object class="GtkListBox" id="results_list">
+            <property name="show-separators">true</property>
+            <property name="selection-mode">none</property>
+          </object>
+        </child>
+      </object>
     </child>
     <child type="titlebar">
       <object class="GtkHeaderBar" id="header_bar">
