@@ -6,6 +6,7 @@
     <property name="default-height">720</property>
     <child>
       <object class="GtkScrolledWindow">
+        <property name="hscrollbar-policy">never</property>
         <child>
           <object class="GtkListBox" id="results_list">
             <property name="show-separators">true</property>

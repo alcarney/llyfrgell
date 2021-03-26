@@ -82,8 +82,7 @@ llyfr_search_result_add_match (LlyfrSearchResult *result,
   g_assert (json_reader_read_member (reader, "text"));
 
   const char *line = json_reader_get_string_value (reader);
-  g_message ("%s", line);
-  result->lines = g_list_prepend (result->lines, g_strdup (line));
+  result->lines = g_list_prepend (result->lines, g_strchomp (g_strdup (line)));
 }
 
 void

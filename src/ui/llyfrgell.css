@@ -8,3 +8,13 @@
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
 }
+
+.solarized text,
+.solarized border {
+  color: #586e75;
+  background-color: #fdf6e3;
+}
+
+.solarized border {
+  border-right: solid 1px #93a1a1;
+}
