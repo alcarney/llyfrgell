@@ -31,21 +31,21 @@ G_BEGIN_DECLS
 
 G_DECLARE_FINAL_TYPE (LlyfrSearchResult, llyfr_search_result, LLYFR, SEARCH_RESULT, GObject)
 
-LlyfrSearchResult *llyfr_search_result_new           (const char *filepath);
+LlyfrSearchResult* llyfr_search_result_new              (const char *filepath);
 
-LlyfrSearchResult *llyfr_search_result_new_from_json (JsonNode *node);
+LlyfrSearchResult* llyfr_search_result_new_from_json    (JsonNode *node);
 
-void               llyfr_search_result_add_match     (LlyfrSearchResult *result,
-                                                      JsonNode *node);
+void               llyfr_search_result_add_match        (LlyfrSearchResult *result,
+                                                         JsonNode *node);
 
-void               llyfr_search_result_end           (LlyfrSearchResult *result);
+GList*             llyfr_search_result_get_matches      (LlyfrSearchResult *result);
 
-const gchar       *llyfr_search_result_get_filepath  (LlyfrSearchResult *result);
+void               llyfr_search_result_end              (LlyfrSearchResult *result);
 
-void               llyfr_search_result_set_filepath  (LlyfrSearchResult *result,
-                                                      const gchar* filepath);
+const gchar       *llyfr_search_result_get_filepath     (LlyfrSearchResult *result);
 
-GList             *llyfr_search_result_get_lines     (LlyfrSearchResult *result);
+void               llyfr_search_result_set_filepath     (LlyfrSearchResult *result,
+                                                         const gchar* filepath);
 
 G_END_DECLS
 

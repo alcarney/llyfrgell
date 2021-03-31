@@ -21,14 +21,14 @@
 #define G_LOG_DOMAIN "llyfr-search-result"
 
 #include "llyfr-search-result.h"
+#include "llyfr-search-match.h"
 
 struct _LlyfrSearchResult
 {
   GObject  parent_instance;
 
-  gchar *filepath;
-  GList *lines;
-
+  gchar   *filepath;
+  GList   *matches;
 };
 
 G_DEFINE_TYPE (LlyfrSearchResult, llyfr_search_result, G_TYPE_OBJECT)
@@ -82,13 +82,22 @@ llyfr_search_result_add_match (LlyfrSearchResult *result,
   g_assert (json_reader_read_member (reader, "text"));
 
   const char *line = json_reader_get_string_value (reader);
-  result->lines = g_list_prepend (result->lines, g_strchomp (g_strdup (line)));
+
+  json_reader_end_member (reader);
+  json_reader_end_member (reader);
+  g_assert (json_reader_read_member (reader, "line_number"));
+
+  gint64 line_number = json_reader_get_int_value (reader);
+
+  LlyfrSearchMatch *match = llyfr_search_match_new (line_number,
+                                                    g_strchomp (line));
+  result->matches = g_list_prepend (result->matches, match);
 }
 
 void
 llyfr_search_result_end (LlyfrSearchResult *result)
 {
-  result->lines = g_list_reverse (result->lines);
+  result->matches = g_list_reverse (result->matches);
 }
 
 const gchar*
@@ -99,16 +108,16 @@ llyfr_search_result_get_filepath (LlyfrSearchResult *self)
 
 void
 llyfr_search_result_set_filepath (LlyfrSearchResult *result,
-                                  const gchar* filepath)
+                                  const gchar *filepath)
 {
   g_clear_pointer (&result->filepath, g_free);
-  result->filepath = g_strdup(filepath);
+  result->filepath = g_strdup (filepath);
 }
 
 GList*
-llyfr_search_result_get_lines (LlyfrSearchResult *result)
+llyfr_search_result_get_matches (LlyfrSearchResult *result)
 {
-  return result->lines;
+  return result->matches;
 }
 
 static void
@@ -149,13 +158,23 @@ llyfr_search_result_set_property (GObject      *object,
     }
 }
 
-void
+static void
+llyfr_search_result_finalize (GObject *object)
+{
+  LlyfrSearchResult *self = LLYFR_SEARCH_RESULT (object);
+
+  g_free (self->filepath);
+  g_list_free (self->matches);
+}
+
+static void
 llyfr_search_result_class_init (LlyfrSearchResultClass *klass)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
   object_class->get_property = llyfr_search_result_get_property;
   object_class->set_property = llyfr_search_result_set_property;
+  object_class->finalize = llyfr_search_result_finalize;
 
   g_object_class_install_property (object_class,
                                    PROP_FILEPATH,
@@ -166,10 +185,9 @@ llyfr_search_result_class_init (LlyfrSearchResultClass *klass)
                                                         G_PARAM_READWRITE));
 }
 
-void
+static void
 llyfr_search_result_init (LlyfrSearchResult *self)
 {
-  self->filepath = NULL;
-  self->lines = NULL;
+
 }
 

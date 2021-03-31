@@ -1,5 +1,6 @@
 sources = [
   'models/llyfr-search-context.c',
+  'models/llyfr-search-match.c',
   'models/llyfr-search-result.c',
   'main.c',
   'llyfr-application.c',
