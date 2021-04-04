@@ -89,8 +89,7 @@ llyfr_search_result_add_match (LlyfrSearchResult *result,
 
   gint64 line_number = json_reader_get_int_value (reader);
 
-  LlyfrSearchMatch *match = llyfr_search_match_new (line_number,
-                                                    g_strchomp (line));
+  LlyfrSearchMatch *match = llyfr_search_match_new (line_number, line);
   result->matches = g_list_prepend (result->matches, match);
 }
 
@@ -164,7 +163,9 @@ llyfr_search_result_finalize (GObject *object)
   LlyfrSearchResult *self = LLYFR_SEARCH_RESULT (object);
 
   g_free (self->filepath);
-  g_list_free (self->matches);
+  g_list_free_full (self->matches, g_object_unref);
+
+  G_OBJECT_CLASS (llyfr_search_result_parent_class)->finalize (object);
 }
 
 static void

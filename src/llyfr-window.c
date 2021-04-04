@@ -28,6 +28,8 @@ struct _LlyfrWindow
 {
   GtkApplicationWindow      parent;
 
+  GListModel                *current_results;
+
   /* Template widgets */
   LlyfrSearchBar            *search_bar;
   GtkListBox                *results_list;
@@ -37,24 +39,40 @@ struct _LlyfrWindow
 
 G_DEFINE_TYPE (LlyfrWindow, llyfr_window, GTK_TYPE_APPLICATION_WINDOW)
 
-static void
-results_available_cb (LlyfrSearchBar* search_bar, GListModel* results, LlyfrWindow* self)
+static void clear_results (LlyfrWindow *self)
 {
-  LlyfrSearchResult *current_result;
+  GtkWidget *row;
+
+  while ((row = gtk_widget_get_first_child (GTK_WIDGET (self->results_list)))) {
+    gtk_list_box_remove (self->results_list, row);
+  }
+
+  if (self->current_results != NULL) {
+    g_object_unref (self->current_results);
+  }
+}
+
+static void
+results_available_cb (LlyfrSearchBar *search_bar, GListModel *results, LlyfrWindow *self)
+{
   LlyfrSearchResultView *result_view;
   guint num_results;
+
+  clear_results (self);
+  self->current_results = results;
 
   num_results = g_list_model_get_n_items (results);
   g_message ("Found %d results!", num_results);
 
   for (guint i = 0; i < num_results; i++) {
-    current_result = LLYFR_SEARCH_RESULT (g_list_model_get_item (results, i));
+    g_autoptr(LlyfrSearchResult) current_result = LLYFR_SEARCH_RESULT (g_list_model_get_item (results, i));
 
     result_view = llyfr_search_result_view_new ();
     llyfr_search_result_view_set_result (result_view, current_result);
 
     gtk_list_box_append (self->results_list, GTK_WIDGET (result_view));
   }
+  g_message ("Done!");
 }
 
 static void
@@ -76,7 +94,7 @@ llyfr_window_class_init (LlyfrWindowClass *klass)
 static void
 llyfr_window_init (LlyfrWindow *self)
 {
-  GtkBuilder* builder;
+  g_autoptr(GtkBuilder) builder = NULL;
   GMenuModel* app_menu;
 
   gtk_widget_init_template (GTK_WIDGET (self));
@@ -89,8 +107,6 @@ llyfr_window_init (LlyfrWindow *self)
                     "results-available",
                     G_CALLBACK (results_available_cb),
                     self);
-
-  g_object_unref (builder);
 }
 
 LlyfrWindow*

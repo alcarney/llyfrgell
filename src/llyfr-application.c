@@ -27,7 +27,6 @@ struct _LlyfrApplication
   GtkApplication application;
 
   GtkWindow      *window;
-
 };
 
 static void llyfr_application_quit (GSimpleAction *simple,

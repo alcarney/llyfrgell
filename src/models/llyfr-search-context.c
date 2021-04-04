@@ -50,7 +50,7 @@ llyfr_search_context_do_rg_search (LlyfrSearchContext *context,
                                    char **output,
                                    GError **error)
 {
-  GSubprocess *process;
+  g_autoptr(GSubprocess) process;
   const gchar *search_directory = llyfr_search_context_get_directory (context);
 
   g_assert (search_directory != NULL);
@@ -103,52 +103,53 @@ GListModel* llyfr_search_context_search (LlyfrSearchContext *context,
   gsize length = 0;
   GListStore* results;
 
-  if (!llyfr_search_context_do_rg_search (context, query, &output, error))
+  if (!llyfr_search_context_do_rg_search (context, query, &output, error)) {
     return NULL;
+  }
 
   results = g_list_store_new (LLYFR_TYPE_SEARCH_RESULT);
   instream = g_memory_input_stream_new_from_data (output, -1, g_free);
   stream = g_data_input_stream_new (instream);
 
-  while ((line = g_data_input_stream_read_line (stream, &length, NULL, error)) != NULL)
-    {
-      g_autoptr (JsonReader) reader = NULL;
-      g_autoptr(JsonNode) node = NULL;
+  while ((line = g_data_input_stream_read_line_utf8 (stream, &length, NULL, error))) {
+    g_autoptr(JsonReader) reader = NULL;
+    g_autoptr(JsonNode) node = NULL;
 
-      g_debug ("%s", line);
-      node = llyfr_search_context_parse_object (line, length, error);
-      if (node == NULL)
-        {
-          g_message ("Unable to parse line '%s'\n%s", line, (*error)->message);
-          g_clear_error (error);
-          continue;
-        }
+    g_debug ("%s", line);
+    node = llyfr_search_context_parse_object (line, length, error);
+    if (node == NULL) {
+      g_message ("Unable to parse line '%s'\n%s", line, (*error)->message);
 
-      reader = json_reader_new (node);
-
-      json_reader_read_member (reader, "type");
-      const char* type = json_reader_get_string_value (reader);
-
-      if (g_strcmp0 (type, "begin") == 0)
-        {
-          current_result = llyfr_search_result_new_from_json (node);
-          continue;
-        }
-
-      if (g_strcmp0 (type, "match") == 0)
-        {
-          llyfr_search_result_add_match (current_result, node);
-        }
-
-      if (g_strcmp0 (type, "end") == 0)
-        {
-          llyfr_search_result_end (current_result);
-          g_list_store_append (results, current_result);
-          continue;
-        }
-
-      g_debug ("Unhandled type: %s", type);
+      g_clear_error (error);
+      g_free (line);
+      continue;
     }
+
+    reader = json_reader_new (node);
+
+    json_reader_read_member (reader, "type");
+    const char* type = json_reader_get_string_value (reader);
+
+    if (g_strcmp0 (type, "begin") == 0) {
+      current_result = llyfr_search_result_new_from_json (node);
+      continue;
+    }
+
+    if (g_strcmp0 (type, "match") == 0) {
+      llyfr_search_result_add_match (current_result, node);
+    }
+
+    if (g_strcmp0 (type, "end") == 0) {
+      llyfr_search_result_end (current_result);
+      g_list_store_append (results, current_result);
+
+      g_object_unref (current_result);
+      continue;
+    }
+
+    g_debug ("Unhandled type: %s", type);
+    g_free (line);
+  }
 
   return G_LIST_MODEL(results);
 }
@@ -179,15 +180,14 @@ llyfr_search_context_get_property (GObject    *object,
 {
   LlyfrSearchContext *self = LLYFR_SEARCH_CONTEXT (object);
 
-  switch (prop_id)
-    {
+  switch (prop_id) {
     case PROP_DIRECTORY:
       g_value_set_string (value, llyfr_search_context_get_directory (self));
       break;
 
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
-    }
+  }
 }
 
 static void
@@ -198,15 +198,25 @@ llyfr_search_context_set_property (GObject      *object,
 {
   LlyfrSearchContext *self = LLYFR_SEARCH_CONTEXT (object);
 
-  switch (prop_id)
-    {
+  switch (prop_id) {
     case PROP_DIRECTORY:
       llyfr_search_context_set_directory (self, g_value_get_string (value));
       break;
 
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
-    }
+  }
+}
+
+static void
+llyfr_search_context_finalize (GObject *object)
+{
+  LlyfrSearchContext *self = LLYFR_SEARCH_CONTEXT (object);
+  LlyfrSearchContextPrivate *priv = llyfr_search_context_get_instance_private (self);
+
+  g_free (priv->directory);
+
+  G_OBJECT_CLASS (llyfr_search_context_parent_class)->finalize (object);
 }
 
 void
@@ -217,6 +227,7 @@ llyfr_search_context_class_init (LlyfrSearchContextClass *klass)
 
   object_class->get_property = llyfr_search_context_get_property;
   object_class->set_property = llyfr_search_context_set_property;
+  object_class->finalize = llyfr_search_context_finalize;
 
   g_object_class_install_property (object_class,
                                    PROP_DIRECTORY,

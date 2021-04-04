@@ -68,7 +68,7 @@ llyfr_search_match_set_text (LlyfrSearchMatch *match,
                              const gchar *text)
 {
   g_clear_pointer (&match->text, g_free);
-  match->text = g_strdup (text);
+  match->text = g_strchomp (g_strdup (text));
 }
 
 const gchar*
@@ -128,6 +128,8 @@ llyfr_search_match_finalize (GObject *object)
 {
   LlyfrSearchMatch *self = LLYFR_SEARCH_MATCH (object);
   g_free (self->text);
+
+  G_OBJECT_CLASS (llyfr_search_match_parent_class)->finalize (object);
 }
 
 static void

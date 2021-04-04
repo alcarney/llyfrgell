@@ -50,7 +50,7 @@ static void
 search_cb (LlyfrSearchBar *self, GtkSearchEntry *search_entry)
 {
   const char* query;
-  LlyfrSearchContext *context;
+  g_autoptr(LlyfrSearchContext) context;
 
   context = llyfr_search_context_new ("/home/alex/Code/gnome-builder");
   query = gtk_editable_get_text (GTK_EDITABLE (search_entry));

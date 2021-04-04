@@ -48,7 +48,8 @@ make_line_numbers ()
 {
   GtkWidget *container = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
   gtk_widget_set_margin_end (container, 6);
-  gtk_widget_set_margin_top (container, 12);
+  gtk_widget_set_margin_top (container, 6);
+  gtk_widget_set_margin_start (container, 6);
 
   return container;
 }
@@ -100,6 +101,7 @@ llyfr_search_result_view_set_result (LlyfrSearchResultView *view,
     gtk_text_buffer_insert_at_cursor (buffer, text, -1);
     add_line_number (line_numbers, line_number);
   }
+
 }
 
 
