@@ -72,6 +72,8 @@ llyfr_application_startup (GApplication *application)
   GtkApplication *gtk_app = GTK_APPLICATION (application);
   LlyfrApplication *self = LLYFR_APPLICATION (application);
 
+
+  adw_init ();
   g_action_map_add_action_entries (G_ACTION_MAP (self),
                                    llyfr_application_entries,
                                    G_N_ELEMENTS (llyfr_application_entries),

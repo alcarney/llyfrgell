@@ -5,6 +5,7 @@
     <file>ui/menus.ui</file>
     <file>ui/search_bar.ui</file>
     <file>ui/result_view.ui</file>
-    <file>ui/window.ui</file>
+    <file>llyfr-search-screen.ui</file>
+    <file>llyfr-window.ui</file>
   </gresource>
 </gresources>

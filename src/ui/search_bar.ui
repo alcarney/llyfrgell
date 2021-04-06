@@ -2,7 +2,6 @@
 <interface>
   <requires lib="gtk" version="4.0"/>
   <template class="LlyfrSearchBar" parent="GtkBox">
-    <property name="visible">True</property>
     <style>
       <class name="linked"/>
     </style>

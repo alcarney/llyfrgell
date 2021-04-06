@@ -6,6 +6,7 @@ sources = [
   'llyfr-application.c',
   'llyfr-search-bar.c',
   'llyfr-search-result-view.c',
+  'llyfr-search-screen.c',
   'llyfr-window.c',
 ]
 
@@ -13,6 +14,7 @@ deps = [
   dependency('gio-2.0', version: '>= 2.50'),
   dependency('gtk4', version: '>= 4.0'),
   dependency('json-glib-1.0', version: '>= 1.2.0'),
+  dependency('libadwaita-1')
 ]
 
 includes = include_directories(

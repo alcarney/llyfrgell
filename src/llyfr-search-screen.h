@@ -1,6 +1,6 @@
-/* llyfr-application.h
+/* llyfr-search-screen.h
  *
- * Copyright 2021 Alex Carney
+ * Copyright 2021 Alex Carney <alcarneyme@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,21 +18,20 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-#ifndef LLYFR_APPLICATION_H
-#define LLYFR_APPLICATION_H
+#ifndef LLYFR_SEARCH_SCREEN_H
+#define LLYFR_SEARCH_SCREEN_H
 
 #include <glib-object.h>
 #include <gtk/gtk.h>
-#include <adwaita.h>
 
 G_BEGIN_DECLS
 
-#define LLYFR_TYPE_APPLICATION (llyfr_application_get_type())
+#define LLYFR_TYPE_SEARCH_SCREEN (llyfr_search_screen_get_type())
 
-G_DECLARE_FINAL_TYPE (LlyfrApplication, llyfr_application, LLYFR, APPLICATION, GtkApplication)
+G_DECLARE_FINAL_TYPE (LlyfrSearchScreen, llyfr_search_screen, LLYFR, SEARCH_SCREEN, GtkBox)
 
-LlyfrApplication* llyfr_application_new (void);
+LlyfrSearchScreen *llyfr_search_screen_new (void);
 
 G_END_DECLS
 
-#endif /* LLYFR_APPLICATION_H */
+#endif

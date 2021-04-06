@@ -92,11 +92,8 @@ llyfr_search_result_view_set_result (LlyfrSearchResultView *view,
                             GTK_TEXT_WINDOW_LEFT,
                             line_numbers);
 
-  for (int i = 0; matches != NULL; matches = matches->next)
+  for (; matches != NULL; matches = matches->next)
   {
-    if (i > 0)
-      gtk_text_buffer_insert_at_cursor (buffer, "\n", -1);
-
     GtkTextIter start, end;
     GArray *highlights;
 
@@ -105,31 +102,26 @@ llyfr_search_result_view_set_result (LlyfrSearchResultView *view,
     const gchar *text = llyfr_search_match_get_text (match);
 
     gtk_text_buffer_insert_at_cursor (buffer, text, -1);
+    gtk_text_buffer_insert_at_cursor (buffer, "\n", -1);
     add_line_number (line_numbers, line_number);
 
     highlights = llyfr_search_match_get_highlights (match);
     if (highlights == NULL || highlights->len == 0)
       continue;
 
-    for (guint j = 0; j < highlights->len; j += 2) {
+    for (guint i = 0; i < highlights->len; i += 2) {
       gtk_text_buffer_get_end_iter (buffer, &start);
       gtk_text_iter_backward_line(&start);
-
-      if (i > 0)
-        gtk_text_iter_forward_line (&start);
-
       end = start;
 
-      gint64 start_offset = g_array_index (highlights, gint64, j);
-      gint64 end_offset = g_array_index (highlights, gint64, j + 1);
+      gint64 start_offset = g_array_index (highlights, gint64, i);
+      gint64 end_offset = g_array_index (highlights, gint64, i + 1);
 
       gtk_text_iter_forward_chars (&start, start_offset);
       gtk_text_iter_forward_chars (&end, end_offset);
 
       gtk_text_buffer_apply_tag (buffer, highlighted, &start, &end);
     }
-
-    i++;
   }
 
 }
