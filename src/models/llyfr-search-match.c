@@ -28,6 +28,7 @@ struct _LlyfrSearchMatch
 
   gchar   *text;
   gint64  line_number;
+  GArray  *highlights;
 };
 
 G_DEFINE_TYPE (LlyfrSearchMatch, llyfr_search_match, G_TYPE_OBJECT)
@@ -36,6 +37,7 @@ enum
 {
   PROP_0,
   PROP_LINENUMBER,
+  PROP_HIGHLIGHTS,
   PROP_TEXT,
   LAST_PROP
 };
@@ -77,6 +79,27 @@ llyfr_search_match_get_text (LlyfrSearchMatch *match)
   return match->text ? match->text : "";
 }
 
+void
+llyfr_search_match_add_highlight (LlyfrSearchMatch *match,
+                                  gint64 start,
+                                  gint64 end)
+{
+  g_assert (start < end);
+
+  if (match->highlights == NULL)
+    match->highlights = g_array_new (FALSE, FALSE, sizeof (gint64));
+
+
+  g_array_append_val (match->highlights, start);
+  g_array_append_val (match->highlights, end);
+}
+
+GArray*
+llyfr_search_match_get_highlights (LlyfrSearchMatch *match)
+{
+  return match->highlights;
+}
+
 static void
 llyfr_search_match_get_property (GObject    *object,
                                  guint       prop_id,
@@ -87,6 +110,9 @@ llyfr_search_match_get_property (GObject    *object,
 
   switch (prop_id)
     {
+    case PROP_HIGHLIGHTS:
+      break;
+
     case PROP_LINENUMBER:
       g_value_set_int64 (value, llyfr_search_match_get_line_number (self));
       break;
@@ -110,6 +136,9 @@ llyfr_search_match_set_property (GObject      *object,
 
   switch (prop_id)
     {
+    case PROP_HIGHLIGHTS:
+      break;
+
     case PROP_LINENUMBER:
       llyfr_search_match_set_line_number (self, g_value_get_int64 (value));
       break;
@@ -128,6 +157,9 @@ llyfr_search_match_finalize (GObject *object)
 {
   LlyfrSearchMatch *self = LLYFR_SEARCH_MATCH (object);
   g_free (self->text);
+
+  if (self->highlights)
+    g_array_free (self->highlights, TRUE);
 
   G_OBJECT_CLASS (llyfr_search_match_parent_class)->finalize (object);
 }

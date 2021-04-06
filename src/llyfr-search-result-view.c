@@ -42,7 +42,6 @@ llyfr_search_result_view_new (void)
   return g_object_new (LLYFR_TYPE_SEARCH_RESULT_VIEW, NULL);
 }
 
-
 static GtkWidget*
 make_line_numbers ()
 {
@@ -71,6 +70,7 @@ llyfr_search_result_view_set_result (LlyfrSearchResultView *view,
                                      LlyfrSearchResult *result)
 {
   GtkTextBuffer *buffer;
+  GtkTextTag *highlighted;
   GtkWidget *line_numbers;
 
   const gchar *filepath;
@@ -80,6 +80,11 @@ llyfr_search_result_view_set_result (LlyfrSearchResultView *view,
   gtk_label_set_text (view->filepath_label, filepath);
 
   buffer = gtk_text_view_get_buffer (view->text_view);
+  highlighted = gtk_text_buffer_create_tag (buffer, "highlighed",
+                                            "background", "green",
+                                            "foreground", "white",
+                                            NULL);
+
   matches = llyfr_search_result_get_matches (result);
 
   line_numbers = make_line_numbers ();
@@ -89,21 +94,45 @@ llyfr_search_result_view_set_result (LlyfrSearchResultView *view,
 
   for (int i = 0; matches != NULL; matches = matches->next)
   {
-    if (i > 0) {
+    if (i > 0)
       gtk_text_buffer_insert_at_cursor (buffer, "\n", -1);
-    } else {
-      i++;
-    }
+
+    GtkTextIter start, end;
+    GArray *highlights;
+
     LlyfrSearchMatch *match = matches->data;
     gint64 line_number = llyfr_search_match_get_line_number (match);
     const gchar *text = llyfr_search_match_get_text (match);
 
     gtk_text_buffer_insert_at_cursor (buffer, text, -1);
     add_line_number (line_numbers, line_number);
+
+    highlights = llyfr_search_match_get_highlights (match);
+    if (highlights == NULL || highlights->len == 0)
+      continue;
+
+    for (guint j = 0; j < highlights->len; j += 2) {
+      gtk_text_buffer_get_end_iter (buffer, &start);
+      gtk_text_iter_backward_line(&start);
+
+      if (i > 0)
+        gtk_text_iter_forward_line (&start);
+
+      end = start;
+
+      gint64 start_offset = g_array_index (highlights, gint64, j);
+      gint64 end_offset = g_array_index (highlights, gint64, j + 1);
+
+      gtk_text_iter_forward_chars (&start, start_offset);
+      gtk_text_iter_forward_chars (&end, end_offset);
+
+      gtk_text_buffer_apply_tag (buffer, highlighted, &start, &end);
+    }
+
+    i++;
   }
 
 }
-
 
 static void
 llyfr_search_result_view_class_init (LlyfrSearchResultViewClass *klass)

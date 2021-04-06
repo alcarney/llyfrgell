@@ -30,7 +30,13 @@ G_BEGIN_DECLS
 G_DECLARE_FINAL_TYPE (LlyfrSearchMatch, llyfr_search_match, LLYFR, SEARCH_MATCH, GObject)
 
 LlyfrSearchMatch *llyfr_search_match_new             (gint64 line_number,
-                                                      const gchar* text);
+                                                      const gchar *text);
+
+void              llyfr_search_match_add_highlight   (LlyfrSearchMatch *match,
+                                                      gint64 start,
+                                                      gint64 end);
+
+GArray*           llyfr_search_match_get_highlights  (LlyfrSearchMatch *match);
 
 gint64            llyfr_search_match_get_line_number (LlyfrSearchMatch *match);
 

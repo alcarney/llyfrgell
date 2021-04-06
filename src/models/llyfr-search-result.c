@@ -40,6 +40,20 @@ enum
   LAST_PROP
 };
 
+// Parsing helpers.
+static void        parse_check_type        (JsonReader *reader,
+                                            const char* type);
+
+static const char* parse_match_filepath    (JsonReader *reader);
+
+static void        parse_match_highlight   (JsonReader *reader,
+                                            gint64     *start,
+                                            gint64     *end);
+
+static gint64      parse_match_line_number (JsonReader *reader);
+
+static const char* parse_match_text        (JsonReader *reader);
+
 LlyfrSearchResult*
 llyfr_search_result_new (const char* filepath)
 {
@@ -52,17 +66,9 @@ LlyfrSearchResult*
 llyfr_search_result_new_from_json (JsonNode* node)
 {
   g_autoptr (JsonReader) reader = json_reader_new (node);
+  parse_check_type (reader, "begin");
 
-  json_reader_read_member (reader, "type");
-  const char *type = json_reader_get_string_value (reader);
-  g_assert (g_strcmp0 (type, "begin") == 0);
-
-  json_reader_end_member (reader);
-  g_assert (json_reader_read_member (reader, "data"));
-  g_assert (json_reader_read_member (reader, "path"));
-  g_assert (json_reader_read_member (reader, "text"));
-
-  const char *filepath = json_reader_get_string_value (reader);
+  const char *filepath = parse_match_filepath (reader);
   return llyfr_search_result_new (filepath);
 }
 
@@ -71,25 +77,27 @@ llyfr_search_result_add_match (LlyfrSearchResult *result,
                                JsonNode *node)
 {
   g_autoptr (JsonReader) reader = json_reader_new (node);
+  parse_check_type (reader, "match");
 
-  json_reader_read_member (reader, "type");
-  const char *type = json_reader_get_string_value (reader);
-  g_assert (g_strcmp0 (type, "match") == 0);
-
-  json_reader_end_member (reader);
-  g_assert (json_reader_read_member (reader, "data"));
-  g_assert (json_reader_read_member (reader, "lines"));
-  g_assert (json_reader_read_member (reader, "text"));
-
-  const char *line = json_reader_get_string_value (reader);
-
-  json_reader_end_member (reader);
-  json_reader_end_member (reader);
-  g_assert (json_reader_read_member (reader, "line_number"));
-
-  gint64 line_number = json_reader_get_int_value (reader);
+  const char *line = parse_match_text (reader);
+  gint64 line_number = parse_match_line_number (reader);
 
   LlyfrSearchMatch *match = llyfr_search_match_new (line_number, line);
+
+  g_assert (json_reader_read_member (reader, "data"));
+  g_assert (json_reader_read_member (reader, "submatches"));
+  g_assert (json_reader_is_array (reader));
+
+  for (gint i = 0; i < json_reader_count_elements (reader); i++) {
+    gint64 start, end;
+
+    json_reader_read_element (reader, i);
+    parse_match_highlight (reader, &start, &end);
+    json_reader_end_element (reader);
+
+    llyfr_search_match_add_highlight (match, start, end);
+  }
+
   result->matches = g_list_prepend (result->matches, match);
 }
 
@@ -192,3 +200,73 @@ llyfr_search_result_init (LlyfrSearchResult *self)
 
 }
 
+static void
+parse_check_type (JsonReader *reader, const char *expected)
+{
+  g_assert (json_reader_read_member (reader, "type"));
+  const char *actual = json_reader_get_string_value (reader);
+
+  g_assert (g_strcmp0 (actual, expected) == 0);
+  json_reader_end_member (reader);
+}
+
+static const char*
+parse_match_filepath (JsonReader *reader)
+{
+  g_assert (json_reader_read_member (reader, "data"));
+  g_assert (json_reader_read_member (reader, "path"));
+  g_assert (json_reader_read_member (reader, "text"));
+
+  const char *filepath = json_reader_get_string_value (reader);
+
+  json_reader_end_member (reader);
+  json_reader_end_member (reader);
+  json_reader_end_member (reader);
+
+  return filepath;
+}
+
+static void parse_match_highlight (JsonReader *reader,
+                                   gint64     *start,
+                                   gint64     *end)
+{
+  g_assert (json_reader_is_object (reader));
+  g_assert (json_reader_read_member (reader, "start"));
+
+  *start = json_reader_get_int_value (reader);
+  json_reader_end_member (reader);
+
+  g_assert (json_reader_read_member (reader, "end"));
+  *end = json_reader_get_int_value (reader);
+  json_reader_end_member (reader);
+}
+
+static gint64
+parse_match_line_number (JsonReader *reader)
+{
+  g_assert (json_reader_read_member (reader, "data"));
+  g_assert (json_reader_read_member (reader, "line_number"));
+
+  gint64 line_number = json_reader_get_int_value (reader);
+
+  json_reader_end_member (reader);
+  json_reader_end_member (reader);
+
+  return line_number;
+}
+
+static const char*
+parse_match_text (JsonReader *reader)
+{
+  g_assert (json_reader_read_member (reader, "data"));
+  g_assert (json_reader_read_member (reader, "lines"));
+  g_assert (json_reader_read_member (reader, "text"));
+
+  const char* text = json_reader_get_string_value (reader);
+
+  json_reader_end_member (reader);
+  json_reader_end_member (reader);
+  json_reader_end_member (reader);
+
+  return text;
+}
