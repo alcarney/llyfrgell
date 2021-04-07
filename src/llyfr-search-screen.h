@@ -30,7 +30,10 @@ G_BEGIN_DECLS
 
 G_DECLARE_FINAL_TYPE (LlyfrSearchScreen, llyfr_search_screen, LLYFR, SEARCH_SCREEN, GtkBox)
 
-LlyfrSearchScreen *llyfr_search_screen_new (void);
+LlyfrSearchScreen *llyfr_search_screen_new             (void);
+
+void               llyfr_search_screen_set_application (LlyfrSearchScreen *self,
+                                                        GtkApplication *app);
 
 G_END_DECLS
 

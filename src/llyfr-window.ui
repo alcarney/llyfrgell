@@ -10,7 +10,7 @@
         <property name="title">Start Searching</property>
         <property name="icon-name">edit-find</property>
         <child>
-          <object class="LlyfrSearchScreen">
+          <object class="LlyfrSearchScreen" id="search_screen">
           </object>
         </child>
       </object>
@@ -29,6 +29,7 @@
         </child>
         <child>
           <object class="GtkButton" id="add_button">
+            <property name="action-name">app.scan-git-repos</property>
             <child>
               <object class="GtkImage">
                 <property name="icon-name">list-add-symbolic</property>

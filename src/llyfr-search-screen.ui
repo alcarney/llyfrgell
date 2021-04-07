@@ -32,7 +32,7 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkPopover">
+                      <object class="GtkPopover" id="context_popover">
                         <child>
                           <object class="GtkLabel">
                             <property name="label">Test</property>
