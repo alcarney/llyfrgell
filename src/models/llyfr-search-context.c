@@ -50,7 +50,7 @@ llyfr_search_context_do_rg_search (LlyfrSearchContext *context,
                                    char **output,
                                    GError **error)
 {
-  g_autoptr(GSubprocess) process;
+  g_autoptr(GSubprocess) process = NULL;
   const gchar *search_directory = llyfr_search_context_get_directory (context);
 
   g_assert (search_directory != NULL);

@@ -32,7 +32,7 @@ struct _LlyfrWindow
   GListModel                *current_results;
 
   /* Template widgets */
-  LlyfrSearchBar            *search_bar;
+  //LlyfrSearchBar            *search_bar;
   // GtkListBox                *results_list;
   GtkMenuButton             *menu_button;
   GtkButton                 *add_button;
@@ -86,7 +86,7 @@ llyfr_window_class_init (LlyfrWindowClass *klass)
   g_type_ensure (LLYFR_TYPE_SEARCH_SCREEN);
 
   gtk_widget_class_set_template_from_resource (widget_class, "/io/github/swyddfa/Llyfrgell/llyfr-window.ui");
-  gtk_widget_class_bind_template_child (widget_class, LlyfrWindow, search_bar);
+  //gtk_widget_class_bind_template_child (widget_class, LlyfrWindow, search_bar);
   // gtk_widget_class_bind_template_child (widget_class, LlyfrWindow, results_list);
   gtk_widget_class_bind_template_child (widget_class, LlyfrWindow, menu_button);
   gtk_widget_class_bind_template_child (widget_class, LlyfrWindow, add_button);
@@ -105,10 +105,10 @@ llyfr_window_init (LlyfrWindow *self)
   app_menu = G_MENU_MODEL (gtk_builder_get_object (builder, "app_menu"));
   gtk_menu_button_set_menu_model (self->menu_button, app_menu);
 
-  g_signal_connect (self->search_bar,
+  /*g_signal_connect (self->search_bar,
                     "results-available",
                     G_CALLBACK (results_available_cb),
-                    self);
+                    self);*/
 }
 
 LlyfrWindow*

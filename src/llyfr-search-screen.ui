@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
-  <requires lib="gtk" version="4.0"/>
+  <requires lib="gtk" version="4.0" />
   <template class="LlyfrSearchScreen" parent="GtkBox">
     <property name="orientation">vertical</property>
     <child>
@@ -11,7 +11,8 @@
               <class name="linked"/>
             </style>
             <child>
-              <object class="GtkButton">
+              <object class="GtkButton" id="context_switcher">
+                <signal name="clicked" handler="switch_context_cb" swapped="yes" object="LlyfrSearchScreen" />
                 <child>
                   <object class="GtkBox">
                     <property name="spacing">6</property>
@@ -44,8 +45,9 @@
               </object>
             </child>
             <child>
-              <object class="GtkSearchEntry">
-                <property name="hexpand">True</property >
+              <object class="GtkSearchEntry" id="search_entry">
+                <property name="hexpand">True</property>
+                <signal name="activate" handler="search_cb" swapped="yes" object="LlyfrSearchScreen"/>
               </object>
             </child>
             <child>
