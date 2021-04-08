@@ -50,7 +50,7 @@ search_cb (LlyfrSearchScreen *self, GtkSearchEntry *search_entry)
 static void
 switch_context_cb (LlyfrSearchScreen *self, GtkButton *button)
 {
-  g_message ("Context!");
+  gtk_popover_popup (self->context_popover);
 }
 
 LlyfrSearchScreen *
