@@ -1,4 +1,5 @@
 sources = [
+  'gui/llyfr-search-context-switcher.c',
   'models/llyfr-search-context.c',
   'models/llyfr-search-match.c',
   'models/llyfr-search-result.c',
@@ -18,6 +19,7 @@ deps = [
 ]
 
 includes = include_directories(
+  'gui',
   'models'
 )
 

@@ -36,7 +36,6 @@ struct _LlyfrWindow
   // GtkListBox                *results_list;
   LlyfrSearchScreen         *search_screen;
   GtkMenuButton             *menu_button;
-  GtkButton                 *add_button;
 };
 
 G_DEFINE_TYPE (LlyfrWindow, llyfr_window, GTK_TYPE_APPLICATION_WINDOW)
@@ -91,7 +90,6 @@ llyfr_window_class_init (LlyfrWindowClass *klass)
   // gtk_widget_class_bind_template_child (widget_class, LlyfrWindow, results_list);
   gtk_widget_class_bind_template_child (widget_class, LlyfrWindow, search_screen);
   gtk_widget_class_bind_template_child (widget_class, LlyfrWindow, menu_button);
-  gtk_widget_class_bind_template_child (widget_class, LlyfrWindow, add_button);
 
 }
 

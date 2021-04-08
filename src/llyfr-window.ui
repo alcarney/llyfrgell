@@ -6,11 +6,23 @@
     <property name="default-height">720</property>
     <property name="title">Llyfrgell</property>
     <child>
-      <object class="AdwStatusPage">
-        <property name="title">Start Searching</property>
-        <property name="icon-name">edit-find</property>
+      <object class="GtkBox">
+        <property name="orientation">vertical</property>
+        <property name="spacing">12</property>
         <child>
-          <object class="LlyfrSearchScreen" id="search_screen">
+          <object class="GtkSearchBar">
+            <property name="search-mode-enabled">true</property>
+            <child>
+              <object class="LlyfrSearchScreen" id="search_screen">
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="AdwStatusPage">
+            <property name="title">Start Searching</property>
+            <property name="icon-name">edit-find</property>
+            <property name="vexpand">true</property>
           </object>
         </child>
       </object>
@@ -24,16 +36,6 @@
             <property name="direction">none</property>
             <child>
               <placeholder/>
-            </child>
-          </object>
-        </child>
-        <child>
-          <object class="GtkButton" id="add_button">
-            <property name="action-name">app.scan-git-repos</property>
-            <child>
-              <object class="GtkImage">
-                <property name="icon-name">list-add-symbolic</property>
-              </object>
             </child>
           </object>
         </child>

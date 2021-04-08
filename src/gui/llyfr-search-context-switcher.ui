@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <requires lib="gtk" version="4.0" />
+  <template class="LlyfrSearchContextSwitcher" parent="GtkBox">
+    <property name="orientation">vertical</property>
+    <property name="spacing">12</property>
+    <child>
+      <object class="GtkSearchEntry" id="filter_entry">
+        <property name="hexpand">true</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkScrolledWindow">
+        <property name="vexpand">true</property>
+        <child>
+          <object class="GtkListView" id="context_list">
+            <property name="single-click-activate">true</property>
+            <signal name="activate"
+                    handler="activate_listitem_cb"
+                    swapped="yes"
+                    object="LlyfrSearchContextSwitcher"/>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="GtkButton" id="find_repo_button">
+        <property name="action-name">app.scan-git-repos</property>
+        <signal name="clicked"
+                handler="find_repos_cb"
+                swapped="yes"
+                object="LlyfrSearchContextSwitcher" />
+        <child>
+          <object class="GtkBox">
+            <property name="spacing">6</property>
+            <property name="halign">center</property>
+            <child>
+              <object class="GtkLabel">
+                <property name="label">Find Git Repositories</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkSpinner" id="find_repo_spinner">
+                <property name="visible">false</property>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+  </template>
+</interface>
