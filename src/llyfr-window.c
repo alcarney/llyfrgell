@@ -18,7 +18,6 @@
 
 #define G_LOG_DOMAIN "llyfr-window"
 
-#include "llyfr-search-bar.h"
 #include "llyfr-search-context.h"
 #include "llyfr-search-result.h"
 #include "llyfr-search-result-view.h"
@@ -53,7 +52,7 @@ static void clear_results (LlyfrWindow *self)
   }*/
 }
 
-static void
+/*static void
 results_available_cb (LlyfrSearchBar *search_bar, GListModel *results, LlyfrWindow *self)
 {
   LlyfrSearchResultView *result_view;
@@ -74,7 +73,7 @@ results_available_cb (LlyfrSearchBar *search_bar, GListModel *results, LlyfrWind
     // gtk_list_box_append (self->results_list, GTK_WIDGET (result_view));
   }
   g_message ("Done!");
-}
+}*/
 
 static void
 llyfr_window_class_init (LlyfrWindowClass *klass)
@@ -82,7 +81,6 @@ llyfr_window_class_init (LlyfrWindowClass *klass)
   GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 
   // Why is this needed?
-  g_type_ensure (LLYFR_TYPE_SEARCH_BAR);
   g_type_ensure (LLYFR_TYPE_SEARCH_SCREEN);
 
   gtk_widget_class_set_template_from_resource (widget_class, "/io/github/swyddfa/Llyfrgell/llyfr-window.ui");

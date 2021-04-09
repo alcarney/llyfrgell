@@ -32,6 +32,8 @@ struct _LlyfrSearchScreen
   LlyfrSearchContext              *current_context;
 
   GtkSearchEntry                  *search_entry;
+  GtkButton                       *search_button;
+
   GtkLabel                        *context_label;
   GtkButton                       *context_switch_button;
   LlyfrSearchContextSwitcher      *context_switcher;
@@ -40,17 +42,41 @@ struct _LlyfrSearchScreen
 
 G_DEFINE_TYPE (LlyfrSearchScreen, llyfr_search_screen, GTK_TYPE_BOX)
 
-enum {
-  PROP_0,
-  N_PROPS
-};
-
-static GParamSpec *properties [N_PROPS];
-
 static void
 search_cb (LlyfrSearchScreen *self, GtkSearchEntry *search_entry)
 {
-  g_message ("Search!");
+  const char* query;
+
+  g_assert (LLYFR_IS_SEARCH_SCREEN (self));
+  g_assert (GTK_IS_SEARCH_ENTRY (search_entry));
+
+
+  query = gtk_editable_get_text (GTK_EDITABLE (search_entry));
+
+  GError* error = NULL;
+  GListModel *model = llyfr_search_context_search (self->current_context,
+                                                   query, &error);
+  if (model == NULL) {
+    g_message ("Error while searching: %s", error->message);
+    return;
+  }
+
+  g_message ("Found %d results!", g_list_model_get_n_items (model));
+  //g_signal_emit(self, signals[RESULTS_AVAILABLE], 0, model);
+}
+
+static void
+search_changed_cb (LlyfrSearchScreen *self, GtkSearchEntry *search_entry)
+{
+  g_assert (LLYFR_IS_SEARCH_SCREEN (self));
+  g_assert (GTK_IS_SEARCH_ENTRY (search_entry));
+
+  const char *text = gtk_editable_get_text (GTK_EDITABLE (search_entry));
+  if (strlen (text) > 0) {
+    gtk_widget_set_sensitive (GTK_WIDGET (self->search_button), TRUE);
+  } else {
+    gtk_widget_set_sensitive (GTK_WIDGET (self->search_button), FALSE);
+  }
 }
 
 static void
@@ -72,10 +98,14 @@ select_cb (LlyfrSearchScreen *self,
     g_object_unref (self->current_context);
 
   self->current_context = g_object_ref (context);
+
+  gtk_label_set_ellipsize (self->context_label, PANGO_ELLIPSIZE_START);
   gtk_label_set_label (self->context_label,
                        llyfr_search_context_get_directory (self->current_context));
 
   gtk_popover_popdown (self->context_popover);
+
+  gtk_widget_set_sensitive (GTK_WIDGET (self->search_entry), TRUE);
 }
 
 LlyfrSearchScreen *
@@ -103,36 +133,6 @@ llyfr_search_screen_finalize (GObject *object)
 }
 
 static void
-llyfr_search_screen_get_property (GObject    *object,
-                                  guint       prop_id,
-                                  GValue     *value,
-                                  GParamSpec *pspec)
-{
-  LlyfrSearchScreen *self = LLYFR_SEARCH_SCREEN (object);
-
-  switch (prop_id)
-    {
-    default:
-      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
-    }
-}
-
-static void
-llyfr_search_screen_set_property (GObject      *object,
-                                  guint         prop_id,
-                                  const GValue *value,
-                                  GParamSpec   *pspec)
-{
-  LlyfrSearchScreen *self = LLYFR_SEARCH_SCREEN (object);
-
-  switch (prop_id)
-    {
-    default:
-      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
-    }
-}
-
-static void
 llyfr_search_screen_class_init (LlyfrSearchScreenClass *klass)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (klass);
@@ -142,6 +142,8 @@ llyfr_search_screen_class_init (LlyfrSearchScreenClass *klass)
 
   gtk_widget_class_set_template_from_resource (widget_class, "/io/github/swyddfa/Llyfrgell/llyfr-search-screen.ui");
   gtk_widget_class_bind_template_child (widget_class, LlyfrSearchScreen, search_entry);
+  gtk_widget_class_bind_template_child (widget_class, LlyfrSearchScreen, search_button);
+
   gtk_widget_class_bind_template_child (widget_class, LlyfrSearchScreen, context_label);
   gtk_widget_class_bind_template_child (widget_class, LlyfrSearchScreen, context_popover);
   gtk_widget_class_bind_template_child (widget_class, LlyfrSearchScreen, context_switch_button);
@@ -149,11 +151,10 @@ llyfr_search_screen_class_init (LlyfrSearchScreenClass *klass)
 
   gtk_widget_class_bind_template_callback (widget_class, search_cb);
   gtk_widget_class_bind_template_callback (widget_class, select_cb);
+  gtk_widget_class_bind_template_callback (widget_class, search_changed_cb);
   gtk_widget_class_bind_template_callback (widget_class, switch_context_cb);
 
   object_class->finalize = llyfr_search_screen_finalize;
-  object_class->get_property = llyfr_search_screen_get_property;
-  object_class->set_property = llyfr_search_screen_set_property;
 }
 
 static void

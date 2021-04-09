@@ -126,6 +126,7 @@ context_refresh_cb (LlyfrApplication           *app,
 
   gtk_spinner_stop (self->find_repo_spinner);
   gtk_widget_set_visible (GTK_WIDGET (self->find_repo_spinner), FALSE);
+  gtk_widget_set_sensitive (GTK_WIDGET (self->find_repo_button), TRUE);
 }
 
 void
@@ -142,6 +143,7 @@ llyfr_search_context_switcher_set_application (LlyfrSearchContextSwitcher *self,
 static void
 find_repos_cb (LlyfrSearchContextSwitcher *self, GtkButton *button)
 {
+  gtk_widget_set_sensitive (GTK_WIDGET (self->find_repo_button), FALSE);
   gtk_widget_set_visible (GTK_WIDGET (self->find_repo_spinner), TRUE);
   gtk_spinner_start (self->find_repo_spinner);
 }

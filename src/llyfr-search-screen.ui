@@ -12,6 +12,7 @@
             </style>
             <child>
               <object class="GtkButton" id="context_switch_button">
+                <property name="width-request">75</property>
                 <signal name="clicked" handler="switch_context_cb" swapped="yes" object="LlyfrSearchScreen" />
                 <child>
                   <object class="GtkBox">
@@ -37,12 +38,21 @@
             </child>
             <child>
               <object class="GtkSearchEntry" id="search_entry">
-                <property name="hexpand">True</property>
-                <signal name="activate" handler="search_cb" swapped="yes" object="LlyfrSearchScreen"/>
+                <property name="width-request">350</property>
+                <property name="sensitive">false</property>
+                <signal name="activate"
+                        handler="search_cb"
+                        swapped="yes"
+                        object="LlyfrSearchScreen" />
+                <signal name="search-changed"
+                        handler="search_changed_cb"
+                        swapped="yes"
+                        object="LlyfrSearchScreen" />
               </object>
             </child>
             <child>
-              <object class="GtkButton">
+              <object class="GtkButton" id="search_button">
+                <property name="sensitive">false</property>
                 <property name="icon-name">media-playback-start-symbolic</property>
               </object>
             </child>

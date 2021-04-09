@@ -5,7 +5,6 @@ sources = [
   'models/llyfr-search-result.c',
   'main.c',
   'llyfr-application.c',
-  'llyfr-search-bar.c',
   'llyfr-search-result-view.c',
   'llyfr-search-screen.c',
   'llyfr-window.c',
