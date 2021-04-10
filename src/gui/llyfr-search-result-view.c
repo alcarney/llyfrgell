@@ -70,7 +70,6 @@ llyfr_search_result_view_set_result (LlyfrSearchResultView *view,
                                      LlyfrSearchResult *result)
 {
   GtkTextBuffer *buffer;
-  GtkTextTag *highlighted;
   GtkWidget *line_numbers;
 
   const gchar *filepath;
@@ -80,10 +79,11 @@ llyfr_search_result_view_set_result (LlyfrSearchResultView *view,
   gtk_label_set_text (view->filepath_label, filepath);
 
   buffer = gtk_text_view_get_buffer (view->text_view);
-  highlighted = gtk_text_buffer_create_tag (buffer, "highlighed",
-                                            "background", "green",
-                                            "foreground", "white",
-                                            NULL);
+  gtk_text_buffer_set_text (buffer, "", -1);
+  gtk_text_buffer_create_tag (buffer, "highlighted",
+                              "background", "green",
+                              "foreground", "white",
+                              NULL);
 
   matches = llyfr_search_result_get_matches (result);
 
@@ -120,7 +120,7 @@ llyfr_search_result_view_set_result (LlyfrSearchResultView *view,
       gtk_text_iter_forward_chars (&start, start_offset);
       gtk_text_iter_forward_chars (&end, end_offset);
 
-      gtk_text_buffer_apply_tag (buffer, highlighted, &start, &end);
+      gtk_text_buffer_apply_tag_by_name (buffer, "highlighted", &start, &end);
     }
   }
 
@@ -131,7 +131,7 @@ llyfr_search_result_view_class_init (LlyfrSearchResultViewClass *klass)
 {
   GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 
-  gtk_widget_class_set_template_from_resource (widget_class, "/io/github/swyddfa/Llyfrgell/ui/result_view.ui");
+  gtk_widget_class_set_template_from_resource (widget_class, "/io/github/swyddfa/Llyfrgell/gui/llyfr-search-result-view.ui");
   gtk_widget_class_bind_template_child (widget_class, LlyfrSearchResultView, filepath_label);
   gtk_widget_class_bind_template_child (widget_class, LlyfrSearchResultView, text_view);
 }

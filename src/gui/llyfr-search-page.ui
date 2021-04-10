@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <requires lib="gtk" version="4.0" />
+  <template class="LlyfrSearchPage" parent="GtkBox">
+    <property name="orientation">vertical</property>
+    <child>
+      <object class="GtkSearchBar">
+        <property name="search-mode-enabled">true</property>
+        <child>
+          <object class="LlyfrSearchBar" id="search_bar">
+            <signal name="search"
+                    handler="search_cb"
+                    swapped="yes"
+                    object="LlyfrSearchPage" />
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="AdwStatusPage" id="status_page">
+        <property name="title">Start Searching</property>
+        <property name="icon-name">edit-find</property>
+        <property name="vexpand">true</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkScrolledWindow" id="results_view">
+        <property name="vexpand">true</property>
+        <property name="visible">false</property>
+        <child>
+          <object class="GtkListView" id="results_list">
+            <property name="show-separators">true</property>
+            <signal name="activate"
+                    handler="activate_listitem_cb"
+                    swapped="yes"
+                    object="LlyfrSearchPage"/>
+          </object>
+        </child>
+      </object>
+    </child>
+  </template>
+</interface>

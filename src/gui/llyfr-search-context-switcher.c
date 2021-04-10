@@ -153,8 +153,11 @@ llyfr_search_context_switcher_finalize (GObject *object)
 {
   LlyfrSearchContextSwitcher *self = LLYFR_SEARCH_CONTEXT_SWITCHER (object);
 
-  g_object_unref (self->current_model);
-  g_object_unref (self->current_factory);
+  if (self->current_model)
+    g_object_unref (self->current_model);
+
+  if (self->current_factory)
+    g_object_unref (self->current_factory);
 
   G_OBJECT_CLASS (llyfr_search_context_switcher_parent_class)->finalize (object);
 }

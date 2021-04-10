@@ -4,9 +4,10 @@ sources = [
   'core/llyfr-search-result.c',
   'gui/llyfr-search-bar.c',
   'gui/llyfr-search-context-switcher.c',
+  'gui/llyfr-search-page.c',
+  'gui/llyfr-search-result-view.c',
   'main.c',
   'llyfr-application.c',
-  'llyfr-search-result-view.c',
   'llyfr-window.c',
 ]
 

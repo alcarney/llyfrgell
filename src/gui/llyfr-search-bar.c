@@ -42,6 +42,13 @@ struct _LlyfrSearchBar
 
 G_DEFINE_TYPE (LlyfrSearchBar, llyfr_search_bar, GTK_TYPE_BOX)
 
+enum {
+  SIGNAL_SEARCH,
+  N_SIGNALS
+};
+
+static guint signals[N_SIGNALS] = {0, };
+
 static void
 search_cb (LlyfrSearchBar *self, GtkSearchEntry *search_entry)
 {
@@ -62,7 +69,7 @@ search_cb (LlyfrSearchBar *self, GtkSearchEntry *search_entry)
   }
 
   g_message ("Found %d results!", g_list_model_get_n_items (model));
-  //g_signal_emit(self, signals[RESULTS_AVAILABLE], 0, model);
+  g_signal_emit(self, signals[SIGNAL_SEARCH], 0, model);
 }
 
 static void
@@ -157,6 +164,17 @@ llyfr_search_bar_class_init (LlyfrSearchBarClass *klass)
   gtk_widget_class_bind_template_callback (widget_class, switch_context_cb);
 
   object_class->finalize = llyfr_search_bar_finalize;
+
+  signals[SIGNAL_SEARCH] = g_signal_new ("search",
+                                         LLYFR_TYPE_SEARCH_BAR,
+                                         G_SIGNAL_RUN_LAST,
+                                         0,
+                                         NULL,
+                                         NULL,
+                                         NULL,
+                                         G_TYPE_NONE,
+                                         1,
+                                         G_TYPE_LIST_MODEL);
 }
 
 static void
