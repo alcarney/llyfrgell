@@ -18,10 +18,10 @@
 
 #define G_LOG_DOMAIN "llyfr-window"
 
+#include "llyfr-search-bar.h"
 #include "llyfr-search-context.h"
 #include "llyfr-search-result.h"
 #include "llyfr-search-result-view.h"
-#include "llyfr-search-screen.h"
 #include "llyfr-window.h"
 
 struct _LlyfrWindow
@@ -31,9 +31,8 @@ struct _LlyfrWindow
   GListModel                *current_results;
 
   /* Template widgets */
-  //LlyfrSearchBar            *search_bar;
+  LlyfrSearchBar            *search_bar;
   // GtkListBox                *results_list;
-  LlyfrSearchScreen         *search_screen;
   GtkMenuButton             *menu_button;
 };
 
@@ -81,12 +80,12 @@ llyfr_window_class_init (LlyfrWindowClass *klass)
   GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 
   // Why is this needed?
-  g_type_ensure (LLYFR_TYPE_SEARCH_SCREEN);
+  g_type_ensure (LLYFR_TYPE_SEARCH_BAR);
 
   gtk_widget_class_set_template_from_resource (widget_class, "/io/github/swyddfa/Llyfrgell/llyfr-window.ui");
   //gtk_widget_class_bind_template_child (widget_class, LlyfrWindow, search_bar);
   // gtk_widget_class_bind_template_child (widget_class, LlyfrWindow, results_list);
-  gtk_widget_class_bind_template_child (widget_class, LlyfrWindow, search_screen);
+  gtk_widget_class_bind_template_child (widget_class, LlyfrWindow, search_bar);
   gtk_widget_class_bind_template_child (widget_class, LlyfrWindow, menu_button);
 
 }
@@ -117,7 +116,7 @@ llyfr_window_new (GtkApplication *app)
 		                                "application", app,
 		                                NULL);
 
-  llyfr_search_screen_set_application (win->search_screen, app);
+  llyfr_search_bar_set_application (win->search_bar, app);
 
   return win;
 }

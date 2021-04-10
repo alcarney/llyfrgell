@@ -13,7 +13,7 @@
           <object class="GtkSearchBar">
             <property name="search-mode-enabled">true</property>
             <child>
-              <object class="LlyfrSearchScreen" id="search_screen">
+              <object class="LlyfrSearchBar" id="search_bar">
               </object>
             </child>
           </object>

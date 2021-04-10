@@ -1,12 +1,12 @@
 sources = [
+  'core/llyfr-search-context.c',
+  'core/llyfr-search-match.c',
+  'core/llyfr-search-result.c',
+  'gui/llyfr-search-bar.c',
   'gui/llyfr-search-context-switcher.c',
-  'models/llyfr-search-context.c',
-  'models/llyfr-search-match.c',
-  'models/llyfr-search-result.c',
   'main.c',
   'llyfr-application.c',
   'llyfr-search-result-view.c',
-  'llyfr-search-screen.c',
   'llyfr-window.c',
 ]
 
@@ -18,8 +18,8 @@ deps = [
 ]
 
 includes = include_directories(
+  'core',
   'gui',
-  'models'
 )
 
 gnome = import('gnome')

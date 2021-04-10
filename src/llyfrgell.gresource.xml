@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <gresources>
   <gresource prefix="/io/github/swyddfa/Llyfrgell">
+    <file>gui/llyfr-search-bar.ui</file>
     <file>gui/llyfr-search-context-switcher.ui</file>
     <file>ui/llyfrgell.css</file>
     <file>ui/menus.ui</file>
-    <file>ui/search_bar.ui</file>
     <file>ui/result_view.ui</file>
-    <file>llyfr-search-screen.ui</file>
     <file>llyfr-window.ui</file>
   </gresource>
 </gresources>

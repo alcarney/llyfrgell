@@ -1,4 +1,4 @@
-/* llyfr-search-screen.h
+/* llyfr-search-bar.h
  *
  * Copyright 2021 Alex Carney <alcarneyme@gmail.com>
  *
@@ -18,23 +18,23 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-#ifndef LLYFR_SEARCH_SCREEN_H
-#define LLYFR_SEARCH_SCREEN_H
+#ifndef LLYFR_SEARCH_BAR_H
+#define LLYFR_SEARCH_BAR_H
 
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
 G_BEGIN_DECLS
 
-#define LLYFR_TYPE_SEARCH_SCREEN (llyfr_search_screen_get_type())
+#define LLYFR_TYPE_SEARCH_BAR (llyfr_search_bar_get_type())
 
-G_DECLARE_FINAL_TYPE (LlyfrSearchScreen, llyfr_search_screen, LLYFR, SEARCH_SCREEN, GtkBox)
+G_DECLARE_FINAL_TYPE (LlyfrSearchBar, llyfr_search_bar, LLYFR, SEARCH_BAR, GtkBox)
 
-LlyfrSearchScreen *llyfr_search_screen_new             (void);
+LlyfrSearchBar *llyfr_search_bar_new             (void);
 
-void               llyfr_search_screen_set_application (LlyfrSearchScreen *self,
-                                                        GtkApplication *app);
+void            llyfr_search_bar_set_application (LlyfrSearchBar *self,
+                                                  GtkApplication *app);
 
 G_END_DECLS
 
-#endif
+#endif /* LLYFR_SEARCH_BAR_H */

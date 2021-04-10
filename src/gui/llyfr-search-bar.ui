@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
   <requires lib="gtk" version="4.0" />
-  <template class="LlyfrSearchScreen" parent="GtkBox">
+  <template class="LlyfrSearchBar" parent="GtkBox">
     <property name="orientation">vertical</property>
     <child>
       <object class="AdwClamp">
@@ -13,7 +13,10 @@
             <child>
               <object class="GtkButton" id="context_switch_button">
                 <property name="width-request">75</property>
-                <signal name="clicked" handler="switch_context_cb" swapped="yes" object="LlyfrSearchScreen" />
+                <signal name="clicked"
+                        handler="switch_context_cb"
+                        swapped="yes"
+                        object="LlyfrSearchBar" />
                 <child>
                   <object class="GtkBox">
                     <property name="spacing">6</property>
@@ -43,11 +46,11 @@
                 <signal name="activate"
                         handler="search_cb"
                         swapped="yes"
-                        object="LlyfrSearchScreen" />
+                        object="LlyfrSearchBar" />
                 <signal name="search-changed"
                         handler="search_changed_cb"
                         swapped="yes"
-                        object="LlyfrSearchScreen" />
+                        object="LlyfrSearchBar" />
               </object>
             </child>
             <child>
@@ -65,7 +68,7 @@
                    <signal name="select"
                            handler="select_cb"
                            swapped="yes"
-                           object="LlyfrSearchScreen" />
+                           object="LlyfrSearchBar" />
                  </object>
                </child>
             </object>
