@@ -33,6 +33,9 @@
                     handler="activate_listitem_cb"
                     swapped="yes"
                     object="LlyfrSearchPage"/>
+            <style>
+              <class name="solarized" />
+            </style>
           </object>
         </child>
       </object>

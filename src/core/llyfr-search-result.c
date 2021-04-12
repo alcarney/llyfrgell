@@ -139,8 +139,9 @@ llyfr_search_result_get_text_buffer (LlyfrSearchResult *self)
     return self->buffer;
 
   self->buffer = gtk_text_buffer_new (NULL);
+  gtk_text_buffer_insert_at_cursor (self->buffer, "\n", -1);
   gtk_text_buffer_create_tag (self->buffer, "highlighted",
-                              "background", "green",
+                              "background", "#268bd2",
                               "foreground", "white",
                               NULL);
 

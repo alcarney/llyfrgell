@@ -57,9 +57,12 @@ static void
 setup_listitem_cb (GtkListItemFactory *factory,
                    GtkListItem        *list_item)
 {
-  GtkWidget *text_widget = gtk_text_view_new ();
   GtkWidget *filepath = gtk_label_new ("");
+  GtkWidget *text_widget = gtk_text_view_new ();
   GtkTextView *text_view = GTK_TEXT_VIEW (text_widget);
+
+  gtk_widget_set_halign (filepath, GTK_ALIGN_START);
+  gtk_widget_set_margin_start (filepath, 6);
 
   gtk_text_view_set_editable (text_view, FALSE);
   gtk_text_view_set_monospace (text_view, TRUE);
@@ -70,8 +73,6 @@ setup_listitem_cb (GtkListItemFactory *factory,
   gtk_text_view_set_bottom_margin (text_view, 6);
   gtk_text_view_set_gutter (text_view, GTK_TEXT_WINDOW_TOP, filepath);
 
-//  gtk_widget_set_margin_top (text_widget, 6);
-//  gtk_widget_set_margin_bottom (text_widget, 6);
   gtk_widget_set_css_classes (text_widget, (const char* []){"solarized", NULL});
 
   gtk_list_item_set_child (list_item, text_widget);

@@ -9,12 +9,14 @@
   border-bottom-left-radius: 0;
 }
 
+
+.solarized,
 .solarized text,
 .solarized border {
-  color: #586e75;
   background-color: #fdf6e3;
 }
 
 .solarized border {
-  border-bottom: solid 1px #93a1a1;
+  color: #586e75;
+  border-top: solid 1px #93a1a1;
 }
