@@ -4,7 +4,6 @@
     <file>gui/llyfr-search-bar.ui</file>
     <file>gui/llyfr-search-context-switcher.ui</file>
     <file>gui/llyfr-search-page.ui</file>
-    <file>gui/llyfr-search-result-view.ui</file>
     <file>ui/llyfrgell.css</file>
     <file>ui/menus.ui</file>
     <file>llyfr-window.ui</file>

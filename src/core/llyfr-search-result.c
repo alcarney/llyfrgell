@@ -21,14 +21,17 @@
 #define G_LOG_DOMAIN "llyfr-search-result"
 
 #include "llyfr-search-result.h"
+
 #include "llyfr-search-match.h"
 
 struct _LlyfrSearchResult
 {
-  GObject  parent_instance;
+  GObject          parent_instance;
 
-  gchar   *filepath;
-  GList   *matches;
+  gchar           *filepath;
+  GList           *matches;
+
+  GtkTextBuffer   *buffer;
 };
 
 G_DEFINE_TYPE (LlyfrSearchResult, llyfr_search_result, G_TYPE_OBJECT)
@@ -122,9 +125,56 @@ llyfr_search_result_set_filepath (LlyfrSearchResult *result,
 }
 
 GList*
-llyfr_search_result_get_matches (LlyfrSearchResult *result)
+llyfr_search_result_get_matches (LlyfrSearchResult *self)
 {
-  return result->matches;
+  return self->matches;
+}
+
+
+GtkTextBuffer*
+llyfr_search_result_get_text_buffer (LlyfrSearchResult *self)
+{
+
+  if (self->buffer)
+    return self->buffer;
+
+  self->buffer = gtk_text_buffer_new (NULL);
+  gtk_text_buffer_create_tag (self->buffer, "highlighted",
+                              "background", "green",
+                              "foreground", "white",
+                              NULL);
+
+
+  for (GList *matches = self->matches; matches != NULL; matches = matches->next) {
+    GtkTextIter start, end;
+    LlyfrSearchMatch *match = matches->data;
+
+    const gchar* text = llyfr_search_match_get_text (match);
+    GArray *highlights = llyfr_search_match_get_highlights (match);
+
+    // TODO: Add line numbers to the start of a line.
+    gtk_text_buffer_insert_at_cursor (self->buffer, text, -1);
+    gtk_text_buffer_insert_at_cursor (self->buffer, "\n", -1);
+
+    if (highlights == NULL || highlights->len == 0)
+      continue;
+
+    for (guint index = 0; index < highlights->len; index += 2) {
+      gtk_text_buffer_get_end_iter (self->buffer, &start);
+      gtk_text_iter_backward_line (&start);
+      end = start;
+
+      gint64 start_offset = g_array_index (highlights, gint64, index);
+      gint64 end_offset = g_array_index (highlights, gint64, index + 1);
+
+      gtk_text_iter_forward_chars (&start, start_offset);
+      gtk_text_iter_forward_chars (&end, end_offset);
+
+      gtk_text_buffer_apply_tag_by_name (self->buffer, "highlighted", &start, &end);
+    }
+  }
+
+  return self->buffer;
 }
 
 static void
@@ -172,6 +222,7 @@ llyfr_search_result_finalize (GObject *object)
 
   g_free (self->filepath);
   g_list_free_full (self->matches, g_object_unref);
+  g_object_unref (self->buffer);
 
   G_OBJECT_CLASS (llyfr_search_result_parent_class)->finalize (object);
 }

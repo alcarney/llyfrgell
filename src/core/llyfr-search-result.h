@@ -23,6 +23,7 @@
 
 #include <glib.h>
 #include <glib-object.h>
+#include <gtk/gtk.h>
 #include <json-glib/json-glib.h>
 
 G_BEGIN_DECLS
@@ -42,10 +43,12 @@ GList*             llyfr_search_result_get_matches      (LlyfrSearchResult *resu
 
 void               llyfr_search_result_end              (LlyfrSearchResult *result);
 
-const gchar       *llyfr_search_result_get_filepath     (LlyfrSearchResult *result);
+const gchar*       llyfr_search_result_get_filepath     (LlyfrSearchResult *result);
 
 void               llyfr_search_result_set_filepath     (LlyfrSearchResult *result,
                                                          const gchar* filepath);
+
+GtkTextBuffer*     llyfr_search_result_get_text_buffer  (LlyfrSearchResult *result);
 
 G_END_DECLS
 

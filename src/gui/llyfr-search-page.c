@@ -24,7 +24,6 @@
 
 #include "llyfr-search-bar.h"
 #include "llyfr-search-result.h"
-#include "llyfr-search-result-view.h"
 
 struct _LlyfrSearchPage
 {
@@ -58,22 +57,66 @@ static void
 setup_listitem_cb (GtkListItemFactory *factory,
                    GtkListItem        *list_item)
 {
-  GtkWidget *result_view = GTK_WIDGET (llyfr_search_result_view_new ());
+  GtkWidget *text_widget = gtk_text_view_new ();
+  GtkWidget *filepath = gtk_label_new ("");
+  GtkTextView *text_view = GTK_TEXT_VIEW (text_widget);
 
-  gtk_list_item_set_child (list_item, result_view);
+  gtk_text_view_set_editable (text_view, FALSE);
+  gtk_text_view_set_monospace (text_view, TRUE);
+  gtk_text_view_set_wrap_mode (text_view, GTK_WRAP_WORD);
+  gtk_text_view_set_pixels_below_lines (text_view, 1);
+  gtk_text_view_set_left_margin (text_view, 6);
+  gtk_text_view_set_top_margin (text_view, 6);
+  gtk_text_view_set_bottom_margin (text_view, 6);
+  gtk_text_view_set_gutter (text_view, GTK_TEXT_WINDOW_TOP, filepath);
+
+//  gtk_widget_set_margin_top (text_widget, 6);
+//  gtk_widget_set_margin_bottom (text_widget, 6);
+  gtk_widget_set_css_classes (text_widget, (const char* []){"solarized", NULL});
+
+  gtk_list_item_set_child (list_item, text_widget);
 }
 
 static void
 bind_listitem_cb (GtkListItemFactory *factory,
                   GtkListItem        *list_item)
 {
+
+  GtkLabel *filepath;
+  GtkWidget *top_gutter;
+  GtkTextView *text_view;
+  GtkTextBuffer *buffer;
   LlyfrSearchResult *result;
-  LlyfrSearchResultView *result_view;
 
   result = LLYFR_SEARCH_RESULT (gtk_list_item_get_item (list_item));
-  result_view = LLYFR_SEARCH_RESULT_VIEW (gtk_list_item_get_child (list_item));
+  buffer = llyfr_search_result_get_text_buffer (result);
 
-  llyfr_search_result_view_set_result (result_view, result);
+  text_view = GTK_TEXT_VIEW (gtk_list_item_get_child (list_item));
+  top_gutter = gtk_text_view_get_gutter (text_view, GTK_TEXT_WINDOW_TOP);
+  filepath = GTK_LABEL (gtk_widget_get_first_child (top_gutter));
+
+  gtk_label_set_text (filepath, llyfr_search_result_get_filepath (result));
+  gtk_text_view_set_buffer (text_view, g_object_ref (buffer));
+}
+
+static void
+unbind_listitem_cb (GtkListItemFactory *factory,
+                  GtkListItem        *list_item)
+{
+  GtkTextView *text_view;
+
+  text_view = GTK_TEXT_VIEW (gtk_list_item_get_child (list_item));
+  gtk_text_view_set_buffer (text_view, NULL);
+}
+
+static void
+teardown_listitem_cb (GtkListItemFactory *factory,
+                      GtkListItem        *list_item)
+{
+  GtkWidget *text_view =  gtk_list_item_get_child (list_item);
+
+  if (text_view)
+    g_object_unref (text_view);
 }
 
 static void
@@ -104,6 +147,8 @@ search_cb (LlyfrSearchPage *self, GListModel *results, LlyfrSearchBar *search_ba
   self->current_factory = gtk_signal_list_item_factory_new ();
   g_signal_connect (self->current_factory, "setup", G_CALLBACK (setup_listitem_cb), NULL);
   g_signal_connect (self->current_factory, "bind", G_CALLBACK (bind_listitem_cb), NULL);
+  g_signal_connect (self->current_factory, "unbind", G_CALLBACK (unbind_listitem_cb), NULL);
+  g_signal_connect (self->current_factory, "teardown", G_CALLBACK (teardown_listitem_cb), NULL);
 
   gtk_list_view_set_model (self->results_list,
                            GTK_SELECTION_MODEL (self->current_model));

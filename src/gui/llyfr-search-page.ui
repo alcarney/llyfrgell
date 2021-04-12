@@ -29,7 +29,6 @@
         <property name="visible">false</property>
         <child>
           <object class="GtkListView" id="results_list">
-            <property name="show-separators">true</property>
             <signal name="activate"
                     handler="activate_listitem_cb"
                     swapped="yes"

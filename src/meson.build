@@ -5,7 +5,6 @@ sources = [
   'gui/llyfr-search-bar.c',
   'gui/llyfr-search-context-switcher.c',
   'gui/llyfr-search-page.c',
-  'gui/llyfr-search-result-view.c',
   'main.c',
   'llyfr-application.c',
   'llyfr-window.c',
